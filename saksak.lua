@@ -3285,3 +3285,354 @@ end)
 -- ============================================================================
 -- END OF PART 15 (COMPLETE SYSTEM)
 -- ============================================================================
+-- ============================================================================
+-- PROJECT: tiktok: max1sroxedits01 (MAX ULTIMATE HUB)
+-- PART 16: MOBILE LAYOUT, TOP NOTCH & BUTTON ONLY MODE CONTROLLER
+-- ============================================================================
+
+Hub.MobileMode = {
+    Enabled = UserInputService.TouchEnabled,
+    MenuStyle = "Standard", -- "Standard", "TopNotch", "ButtonOnly"
+    NotchOffsetY = 26,
+    NotchWidth = 230,
+    NotchHeight = 32,
+    ButtonOnlySize = 54,
+    ButtonOnlyLabel = "MAX",
+    ButtonOnlyPosX = 0.04,
+    ButtonOnlyPosY = 0.18,
+    AutoCompactOnPortrait = true,
+}
+
+local SavedWindowState = {
+    Size = MainWindow.Size,
+    Position = MainWindow.Position,
+    SidebarVisible = Sidebar.Visible,
+    SidebarWidth = Sidebar.Size.X.Offset,
+    TopbarHeight = Topbar.Size.Y.Offset,
+    ContentPos = ContentContainer.Position,
+    ContentSize = ContentContainer.Size,
+    FloatingVisible = FloatingToggleBtn.Visible,
+}
+
+local TopNotchBar = Instance.new("Frame")
+TopNotchBar.Name = "MaxHub_TopNotchBar"
+TopNotchBar.Size = UDim2.new(0, Hub.MobileMode.NotchWidth, 0, Hub.MobileMode.NotchHeight)
+TopNotchBar.Position = UDim2.new(0.5, -Hub.MobileMode.NotchWidth / 2, 0, Hub.MobileMode.NotchOffsetY)
+TopNotchBar.BackgroundColor3 = Hub.Theme.Sidebar
+TopNotchBar.BackgroundTransparency = 0.05
+TopNotchBar.BorderSizePixel = 0
+TopNotchBar.Visible = false
+TopNotchBar.ZIndex = 95
+TopNotchBar.Parent = ScreenGui
+AddCorner(TopNotchBar, 16)
+local TopNotchStroke = AddStroke(TopNotchBar, Hub.Theme.Accent, 1.4)
+
+local TopNotchBtn = Instance.new("TextButton")
+TopNotchBtn.Name = "TopNotchToggleBtn"
+TopNotchBtn.Size = UDim2.new(1, -10, 1, 0)
+TopNotchBtn.Position = UDim2.new(0, 5, 0, 0)
+TopNotchBtn.BackgroundTransparency = 1
+TopNotchBtn.Font = Enum.Font.GothamBold
+TopNotchBtn.TextSize = 12
+TopNotchBtn.TextColor3 = Hub.Theme.Text
+TopNotchBtn.Text = "◐ " .. Hub.BrandName
+TopNotchBtn.AutoButtonColor = false
+TopNotchBtn.ZIndex = 96
+TopNotchBtn.Parent = TopNotchBar
+
+local ButtonOnlyTrigger = Instance.new("TextButton")
+ButtonOnlyTrigger.Name = "MaxHub_ButtonOnlyTrigger"
+ButtonOnlyTrigger.Size = UDim2.new(0, Hub.MobileMode.ButtonOnlySize, 0, Hub.MobileMode.ButtonOnlySize)
+ButtonOnlyTrigger.Position = UDim2.new(Hub.MobileMode.ButtonOnlyPosX, 0, Hub.MobileMode.ButtonOnlyPosY, 0)
+ButtonOnlyTrigger.BackgroundColor3 = Hub.Theme.Card
+ButtonOnlyTrigger.BorderSizePixel = 0
+ButtonOnlyTrigger.Font = Enum.Font.GothamBold
+ButtonOnlyTrigger.TextSize = 13
+ButtonOnlyTrigger.TextColor3 = Hub.Theme.Accent
+ButtonOnlyTrigger.Text = Hub.MobileMode.ButtonOnlyLabel
+ButtonOnlyTrigger.AutoButtonColor = false
+ButtonOnlyTrigger.Visible = false
+ButtonOnlyTrigger.ZIndex = 97
+ButtonOnlyTrigger.Parent = ScreenGui
+AddCorner(ButtonOnlyTrigger, Hub.MobileMode.ButtonOnlySize / 2)
+local ButtonOnlyStroke = AddStroke(ButtonOnlyTrigger, Hub.Theme.Accent, 2)
+
+local function CaptureWindowSnapshot()
+    SavedWindowState.Size = MainWindow.Size
+    SavedWindowState.Position = MainWindow.Position
+    SavedWindowState.SidebarVisible = Sidebar.Visible
+    SavedWindowState.SidebarWidth = Sidebar.Size.X.Offset
+    SavedWindowState.TopbarHeight = Topbar.Size.Y.Offset
+    SavedWindowState.ContentPos = ContentContainer.Position
+    SavedWindowState.ContentSize = ContentContainer.Size
+    SavedWindowState.FloatingVisible = FloatingToggleBtn.Visible
+end
+
+local function FitMobileViewport()
+    if not Camera then return end
+    local vp = Camera.ViewportSize
+    local isPortrait = vp.Y > vp.X
+    local padX = 24
+    local padY = isPortrait and 110 or 54
+    local targetW = math.clamp(vp.X - padX, 320, Hub.State.UI.WindowWidth)
+    local targetH = math.clamp(vp.Y - padY, 240, Hub.State.UI.WindowHeight)
+    local sideW = isPortrait and math.clamp(math.floor(targetW * 0.34), 118, 165) or math.clamp(Hub.State.UI.SidebarWidth, 140, 195)
+
+    Sidebar.Visible = true
+    Sidebar.Size = UDim2.new(0, sideW, 1, -44)
+    ContentContainer.Position = UDim2.new(0, sideW, 0, 44)
+    ContentContainer.Size = UDim2.new(1, -sideW, 1, -44)
+
+    MainWindow.Size = UDim2.new(0, targetW, 0, Hub.IsMinimized and 44 or targetH)
+    MainWindow.Position = UDim2.new(0.5, -targetW / 2, 0.5, -targetH / 2)
+end
+
+local function SyncMobileModeVisuals()
+    local cfg = Hub.MobileMode
+    TopNotchBar.Size = UDim2.new(0, cfg.NotchWidth, 0, cfg.NotchHeight)
+    TopNotchBar.Position = UDim2.new(0.5, -cfg.NotchWidth / 2, 0, cfg.NotchOffsetY)
+    TopNotchBar.BackgroundColor3 = Hub.Theme.Sidebar
+    TopNotchStroke.Color = Hub.Theme.Accent
+
+    ButtonOnlyTrigger.Size = UDim2.new(0, cfg.ButtonOnlySize, 0, cfg.ButtonOnlySize)
+    ButtonOnlyTrigger.Position = UDim2.new(cfg.ButtonOnlyPosX, 0, cfg.ButtonOnlyPosY, 0)
+    ButtonOnlyTrigger.BackgroundColor3 = Hub.Theme.Card
+    ButtonOnlyTrigger.TextColor3 = Hub.Theme.Accent
+    ButtonOnlyTrigger.Text = cfg.ButtonOnlyLabel
+    ButtonOnlyStroke.Color = Hub.Theme.Accent
+    for _, child in ipairs(ButtonOnlyTrigger:GetChildren()) do
+        if child:IsA("UICorner") then
+            child.CornerRadius = UDim.new(0, cfg.ButtonOnlySize / 2)
+        end
+    end
+end
+
+function Hub:ApplyMobileMenuMode(mode: "Standard" | "TopNotch" | "ButtonOnly")
+    self.MobileMode.MenuStyle = mode
+    SyncMobileModeVisuals()
+
+    if mode == "Standard" then
+        TopNotchBar.Visible = false
+        ButtonOnlyTrigger.Visible = false
+        MainWindow.Size = SavedWindowState.Size
+        MainWindow.Position = SavedWindowState.Position
+        Sidebar.Visible = SavedWindowState.SidebarVisible
+        Sidebar.Size = UDim2.new(0, SavedWindowState.SidebarWidth, 1, -44)
+        ContentContainer.Position = SavedWindowState.ContentPos
+        ContentContainer.Size = SavedWindowState.ContentSize
+        MainWindow.Visible = self.IsOpen
+        FloatingToggleBtn.Visible = (not self.IsOpen) and SavedWindowState.FloatingVisible
+        if self.MobileMode.Enabled then
+            FitMobileViewport()
+        end
+    elseif mode == "TopNotch" then
+        CaptureWindowSnapshot()
+        TopNotchBar.Visible = true
+        ButtonOnlyTrigger.Visible = false
+        FloatingToggleBtn.Visible = false
+
+        local vp = Camera and Camera.ViewportSize or Vector2.new(800, 450)
+        local notchW = math.clamp(vp.X - 24, 320, 680)
+        local topClear = self.MobileMode.NotchOffsetY + self.MobileMode.NotchHeight + 8
+        local notchH = math.clamp(vp.Y - topClear - 16, 220, 440)
+        local sideW = math.clamp(math.floor(notchW * 0.30), 115, 175)
+
+        MainWindow.Visible = self.IsOpen
+        MainWindow.Size = UDim2.new(0, notchW, 0, self.IsMinimized and 44 or notchH)
+        MainWindow.Position = UDim2.new(0.5, -notchW / 2, 0, topClear)
+        Sidebar.Visible = true
+        Sidebar.Size = UDim2.new(0, sideW, 1, -44)
+        ContentContainer.Position = UDim2.new(0, sideW, 0, 44)
+        ContentContainer.Size = UDim2.new(1, -sideW, 1, -44)
+    elseif mode == "ButtonOnly" then
+        CaptureWindowSnapshot()
+        TopNotchBar.Visible = false
+        FloatingToggleBtn.Visible = false
+        ButtonOnlyTrigger.Visible = true
+        MainWindow.Visible = false
+        self.IsOpen = false
+    end
+end
+
+-- Draggable ButtonOnly trigger for touch and mouse
+do
+    local dragging = false
+    local moved = false
+    local dragInput: InputObject? = nil
+    local dragStart = Vector2.zero
+    local startPos = UDim2.new()
+
+    ButtonOnlyTrigger.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            moved = false
+            dragStart = Vector2.new(input.Position.X, input.Position.Y)
+            startPos = ButtonOnlyTrigger.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    ButtonOnlyTrigger.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+
+    Hub:TrackConnection("ButtonOnlyDrag", UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStart
+            if delta.Magnitude > 6 then
+                moved = true
+            end
+            local vp = Camera and Camera.ViewportSize or Vector2.new(1, 1)
+            local scale = UIScaleObj.Scale
+            local newX = math.clamp(startPos.X.Offset + (delta.X / scale), 0, math.max(0, (vp.X / scale) - Hub.MobileMode.ButtonOnlySize))
+            local newY = math.clamp(startPos.Y.Offset + (delta.Y / scale), 0, math.max(0, (vp.Y / scale) - Hub.MobileMode.ButtonOnlySize))
+            ButtonOnlyTrigger.Position = UDim2.new(0, newX, 0, newY)
+            if vp.X > 0 and vp.Y > 0 then
+                Hub.MobileMode.ButtonOnlyPosX = math.clamp(newX / (vp.X / scale), 0, 0.95)
+                Hub.MobileMode.ButtonOnlyPosY = math.clamp(newY / (vp.Y / scale), 0, 0.95)
+            end
+        end
+    end))
+
+    ButtonOnlyTrigger.MouseButton1Click:Connect(function()
+        if moved then return end
+        PlayHubSound("Click")
+        if Hub.MobileMode.MenuStyle == "ButtonOnly" then
+            Hub:SetWindowVisible(not MainWindow.Visible)
+        else
+            Hub:SetWindowVisible(not Hub.IsOpen)
+        end
+    end)
+end
+
+TopNotchBtn.MouseButton1Click:Connect(function()
+    PlayHubSound("Click")
+    Hub:SetWindowVisible(not Hub.IsOpen)
+end)
+
+-- Override SetWindowVisible cleanly so TopNotch and ButtonOnly stay synchronized
+do
+    local baseSetWindowVisible = Hub.SetWindowVisible
+    function Hub:SetWindowVisible(visible: boolean)
+        local style = self.MobileMode.MenuStyle
+        if style == "ButtonOnly" then
+            self.IsOpen = visible
+            ButtonOnlyTrigger.Visible = true
+            FloatingToggleBtn.Visible = false
+            TopNotchBar.Visible = false
+            if visible then
+                MainWindow.Visible = true
+                if self.MobileMode.Enabled then
+                    FitMobileViewport()
+                else
+                    MainWindow.Size = UDim2.new(0, self.State.UI.WindowWidth, 0, self.IsMinimized and 44 or self.State.UI.WindowHeight)
+                    MainWindow.Position = UDim2.new(0.5, -self.State.UI.WindowWidth / 2, 0.5, -self.State.UI.WindowHeight / 2)
+                end
+            else
+                MainWindow.Visible = false
+            end
+            return
+        end
+
+        baseSetWindowVisible(self, visible)
+
+        if style == "TopNotch" then
+            FloatingToggleBtn.Visible = false
+            TopNotchBar.Visible = true
+            if visible then
+                self:ApplyMobileMenuMode("TopNotch")
+            end
+        elseif self.MobileMode.Enabled and visible then
+            FitMobileViewport()
+        end
+    end
+end
+
+-- Build dedicated Mobile Layout settings inside Interface Settings tab
+do
+    local pUI = Hub.Pages["Interface Settings"]
+    if pUI then
+        local secMob = UIFactory.CreateSection(pUI, "Mobile Mode, Top Notch & Button Only", false)
+
+        UIFactory.CreateToggle(secMob, "Mobile Touch Auto-Fit", Hub.MobileMode.Enabled, function(v)
+            Hub.MobileMode.Enabled = v
+            if v then
+                FitMobileViewport()
+                Hub:Notify("Mobile Mode", "Touch viewport auto-fit active.", "Info", 2)
+            else
+                Hub:ApplyMobileMenuMode("Standard")
+            end
+        end)
+
+        UIFactory.CreateDropdown(secMob, "Mobile Menu Mode", { "Standard", "TopNotch", "ButtonOnly" }, Hub.MobileMode.MenuStyle, function(mode)
+            Hub:ApplyMobileMenuMode(mode :: "Standard" | "TopNotch" | "ButtonOnly")
+            Hub:Notify("Menu Mode", "Switched to " .. mode .. " mode.", "Info", 2)
+        end)
+
+        UIFactory.CreateSlider(secMob, "Top Notch Y Offset", 0, 80, Hub.MobileMode.NotchOffsetY, 0, function(v)
+            Hub.MobileMode.NotchOffsetY = v
+            if Hub.MobileMode.MenuStyle == "TopNotch" then
+                Hub:ApplyMobileMenuMode("TopNotch")
+            else
+                SyncMobileModeVisuals()
+            end
+        end)
+
+        UIFactory.CreateSlider(secMob, "Top Notch Width", 140, 420, Hub.MobileMode.NotchWidth, 0, function(v)
+            Hub.MobileMode.NotchWidth = v
+            SyncMobileModeVisuals()
+        end)
+
+        UIFactory.CreateSlider(secMob, "Top Notch Height", 24, 52, Hub.MobileMode.NotchHeight, 0, function(v)
+            Hub.MobileMode.NotchHeight = v
+            if Hub.MobileMode.MenuStyle == "TopNotch" then
+                Hub:ApplyMobileMenuMode("TopNotch")
+            else
+                SyncMobileModeVisuals()
+            end
+        end)
+
+        UIFactory.CreateSlider(secMob, "Button Only Size", 36, 96, Hub.MobileMode.ButtonOnlySize, 0, function(v)
+            Hub.MobileMode.ButtonOnlySize = v
+            SyncMobileModeVisuals()
+        end)
+
+        UIFactory.CreateTextBox(secMob, "Button Only Label", "MAX", function(txt)
+            if txt ~= "" then
+                Hub.MobileMode.ButtonOnlyLabel = txt:sub(1, 8)
+                SyncMobileModeVisuals()
+            end
+        end)
+
+        UIFactory.CreateButton(secMob, "Reset Button Only Position", function()
+            Hub.MobileMode.ButtonOnlyPosX = 0.04
+            Hub.MobileMode.ButtonOnlyPosY = 0.18
+            SyncMobileModeVisuals()
+            Hub:Notify("Button Reset", "Button Only moved to default corner.", "Success", 2)
+        end, false)
+    end
+end
+
+if Camera then
+    Hub:TrackConnection("ViewportResize", Camera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
+        if Hub.MobileMode.MenuStyle == "TopNotch" then
+            Hub:ApplyMobileMenuMode("TopNotch")
+        elseif Hub.MobileMode.Enabled and MainWindow.Visible then
+            FitMobileViewport()
+        end
+    end))
+end
+
+if Hub.MobileMode.Enabled then
+    FitMobileViewport()
+end
+
+-- ============================================================================
+-- END OF PART 16 (MOBILE LAYOUT, TOP NOTCH & BUTTON ONLY CONTROLLER)
+-- ============================================================================
