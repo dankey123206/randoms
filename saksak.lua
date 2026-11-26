@@ -1,671 +1,663 @@
+-- [SATIR 1] Rayfield Arayuz Kutuphanesi Yukleniyor
 local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local Lighting = game:GetService("Lighting")
-local Workspace = game:GetService("Workspace")
+-- [SATIR 4] Temel Roblox Servisleri
+local OyuncularServisi = game:GetService("Players")
+local CalismaServisi = game:GetService("RunService")
+local GirisServisi = game:GetService("UserInputService")
+local AydinlatmaServisi = game:GetService("Lighting")
+local DunyaServisi = game:GetService("Workspace")
+local TweenServisi = game:GetService("TweenService")
 
-local LocalPlayer = Players.LocalPlayer
-local Camera = Workspace.CurrentCamera
+-- [SATIR 12] Yerel Oyuncu ve Kamera Referanslari
+local BenimOyuncu = OyuncularServisi.LocalPlayer
+local AktifKamera = DunyaServisi.CurrentCamera
 
-local Cfg = {
-    AimType = "Smooth", -- "Legit", "Smooth", "Lock", "Rage"
-    AimSmoothness = 0.20, -- 0.03 (cok yumusak) .. 1.00 (anlik)
-    AimFOV = 160,
-    AimPart = "Head",
-    TargetPriority = "Closest", -- "Closest", "LowestHealth", "FOV"
-    TargetTeamMode = "Enemies", -- "Enemies", "All", "NonTeam"
-    TargetFilterMode = "Standard", -- "Standard", "WhitelistOnly", "BlacklistSkip"
-    IgnoreList = "",
-    Whitelist = "",
-    Blacklist = "",
-    WalkSpeedVal = 32,
-    JumpPowerVal = 85,
-    GravityVal = 75,
-    FlySpeedVal = 50,
-    FOVVal = 85,
+-- [SATIR 16] Aimbot ve Hedef Ayarlari (Tamamen Bagimsiz Degiskenler)
+local AimbotTuruSecili = "Yumusak Aim" -- "Normal Aim", "Legit Aim", "Yumusak Aim", "Rage Aim", "Hedef Kilitle"
+local AimbotAktif = false
+local SessizAimAktif = false
+local LegitAimAktif = false
+local RageAimAktif = false
+local HedefKilitleAktif = false
+local OtomatikAtesAktif = false
+local TetikBotuAktif = false
+local YumusakAimAktif = false
+local FovDairesiAktif = false
+local NisantahminiAktif = false
+local EnYakinHedefAktif = false
+local HedefDegistirAktif = false
+local GorunurlukKontrolAktif = true
+local TakimKontrolAimAktif = true
+local ArkadasKontrolAimAktif = true
+local OlumKontrolAimAktif = true
+local BayginKontrolAimAktif = true
+local AimbotKemigiSecili = "Head"
+local AimbotYumusakligi = 0.18
+local AimbotFovYaricapi = 150
+local FovDaireRengi = Color3.fromRGB(255, 220, 50)
 
-    Aimbot = {
-        Aimbot = false, SilentAim = false, LegitAim = false, RageAim = false,
-        TargetLock = false, AutoShoot = false, Triggerbot = false, SmoothAim = false,
-        FOV = false, AimPrediction = false, NearestTarget = false, TargetSwitch = false,
-        VisibleCheck = true, TeamCheck = true, FriendCheck = true, DeathCheck = true,
-        KnockedCheck = true
-    },
-    ESP = {
-        PlayerESP = false, BoxESP = false, SkeletonESP = false, NameESP = false,
-        HealthESP = false, DistanceESP = false, TracerESP = false, Box2D = false,
-        Box3D = false, HeadESP = false, Snaplines = false, Chams = false,
-        GlowESP = false, ItemESP = false, WeaponESP = false, EnemyOnly = true,
-        VisibleOnly = false
-    },
-    Movement = {
-        SpeedHack = false, FlyHack = false, InfiniteJump = false, NoClip = false,
-        Teleport = false, SuperJump = false, NoSlow = false, AirWalk = false,
-        GravityHack = false, Spinbot = false, BunnyHop = false, AntiFall = false
-    },
-    Weapon = {
-        NoRecoil = false, NoSpread = false, RapidFire = false, FastReload = false,
-        InfiniteAmmo = false, NoReload = false, DamageModifier = false,
-        HitboxExpander = false, MeleeAura = false, AutoKill = false
-    },
-    Checks = {
-        TeamCheck = true, FriendCheck = true, EnemyCheck = true, AliveCheck = true,
-        DeadCheck = true, VisibilityCheck = true, WallCheck = true, DistanceCheck = false,
-        HealthCheck = false, NPCCheck = false, BotCheck = false, AFKCheck = false,
-        SafeZoneCheck = false, FOVCheck = true, VehicleCheck = false
-    },
-    Misc = {
-        AntiAim = false, FakeLag = false, Desync = false, HitSound = false,
-        KillSound = false, HitMarker = false, CrosshairChanger = false,
-        FOVChanger = false, FPSUnlocker = false, AutoRespawn = false,
-        SpectatorMode = false, ConfigSystem = false, PanicButton = false
-    },
-    Character = {
-        CharacterESP = false, HeadESP = false, BodyESP = false, HandESP = false,
-        LegESP = false, OutfitESP = false, AvatarESP = false, PlayerHighlight = false,
-        PlayerChams = false
-    },
-    World = {
-        WorldESP = false, ObjectESP = false, DoorESP = false, LootESP = false,
-        WeaponFinder = false, ItemFinder = false, Radar = false, Minimap = false,
-        Fullbright = false, NoFog = false, NightVision = false
-    },
-    TargetSet = {
-        TargetVisibility = true
-    }
-}
+-- [SATIR 41] Hedef Ayarlari (Ekran Tusu Ozelligi Sadece Burada)
+local HedefBolgeSecili = "Head"
+local HedefOnceligiSecili = "En Yakin" -- "En Yakin", "En Dusuk Can", "FOV Ici"
+local HedefMesafesiSiniri = 300
+local HedefTakimModu = "Dusmanlar" -- "Dusmanlar", "Herkes", "Takim Disi"
+local HedefGorunurlukAktif = false
+local HedefCanModu = "En Dusuk"
+local HedefModuSecili = "Normal"
+local HedefFiltreModu = "Standart" -- "Standart", "Beyaz Liste", "Kara Liste"
+local YokSayilanIsimlerMetni = ""
+local BeyazListeIsimlerMetni = ""
+local KaraListeIsimlerMetni = ""
 
-local OverlayGui = Instance.new("ScreenGui")
-OverlayGui.Name = "RayfieldWorkingKeys"
-OverlayGui.ResetOnSpawn = false
-OverlayGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-OverlayGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+-- [SATIR 55] Sadece Hedef (Target) Tarafina Ozel Ekran Tusu Durumlari
+local HedefGorunurlukTusAktif = false
+local HedefKilitleTusAktif = false
+local HedefDegistirTusAktif = false
 
-local KeyButtons = {}
-local keyOrder = 0
+-- [SATIR 60] ESP ve Gorunum Ayarlari (Tus Yok, Temiz Ayri Degiskenler)
+local OyuncuEspAktif = false
+local KutuEspAktif = false
+local IskeletEspAktif = false
+local IsimEspAktif = false
+local CanEspAktif = false
+local MesafeEspAktif = false
+local CizgiEspAktif = false
+local Kutu2DEspAktif = false
+local Kutu3DEspAktif = false
+local KafaEspAktif = false
+local SnaplineEspAktif = false
+local ChamsEspAktif = false
+local ParlamaEspAktif = false
+local EsyaEspAktif = false
+local SilahEspAktif = false
+local SadeceDusmanEspAktif = true
+local SadeceGorunenEspAktif = false
 
-local function setScreenKey(id, label, enabled, onPress)
-    if enabled then
-        if KeyButtons[id] then
-            KeyButtons[id].Btn.Visible = true
-            return
-        end
-        keyOrder += 1
-        local idx = keyOrder
+-- [SATIR 80] Hareket Ayarlari (Ayri Degiskenler)
+local HizHilesiAktif = false
+local UcusHilesiAktif = false
+local SinirsizZiplamaAktif = false
+local DuvarGecisiAktif = false
+local IsinlanmaAktif = false
+local SuperZiplamaAktif = false
+local YavaslamaKaldirAktif = false
+local HavadaYurumeAktif = false
+local YercekimiHilesiAktif = false
+local SpinbotAktif = false
+local TavsanZiplamaAktif = false
+local DusmeKorumaAktif = false
+local SeciliHizDegeri = 32
+local SeciliZiplamaDegeri = 85
+local SeciliUcusHizi = 55
+local SeciliYercekimi = 75
 
-        local btn = Instance.new("TextButton")
-        btn.Name = "Btn_" .. id
-        btn.Size = UDim2.new(0, 90, 0, 38)
-        btn.Position = UDim2.new(0.12 + ((idx % 5) * 0.15), 0, 0.20 + (math.floor(idx / 5) * 0.08), 0)
-        btn.BackgroundColor3 = Color3.fromRGB(115, 118, 125) -- GRI (suruklenebilir)
-        btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        btn.Text = label
-        btn.TextSize = 10
-        btn.Font = Enum.Font.GothamBold
-        btn.Active = true
-        btn.Draggable = true
-        btn.Parent = OverlayGui
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+-- [SATIR 99] Silah ve Savas Ayarlari (Ayri Degiskenler)
+local SekmeKaldirAktif = false
+local DagilmaKaldirAktif = false
+local HizliAtesAktif = false
+local HizliSarjorAktif = false
+local SinirsizMermiAktif = false
+local SarjorYokAktif = false
+local HasarDegistirAktif = false
+local HitboxBuyutAktif = false
+local YakinDovusAuraAktif = false
+local OtomatikOldurAktif = false
 
-        local lockDot = Instance.new("Frame")
-        lockDot.Size = UDim2.new(0, 12, 0, 12)
-        lockDot.Position = UDim2.new(1, -12, 1, -12)
-        lockDot.BackgroundColor3 = Color3.fromRGB(145, 145, 150)
-        lockDot.BorderSizePixel = 0
-        lockDot.Parent = btn
-        Instance.new("UICorner", lockDot).CornerRadius = UDim.new(0, 4)
+-- [SATIR 112] Kontroller ve Filtreler (Ayri Degiskenler)
+local FiltreTakimKontrol = true
+local FiltreArkadasKontrol = true
+local FiltreDusmanKontrol = true
+local FiltreCanliKontrol = true
+local FiltreOluKontrol = true
+local FiltreGorunurKontrol = true
+local FiltreDuvarKontrol = true
+local FiltreMesafeKontrol = false
+local FiltreCanKontrol = false
+local FiltreNpcKontrol = false
+local FiltreBotKontrol = false
+local FiltreAfkKontrol = false
+local FiltreGuvenliBolgeKontrol = false
+local FiltreFovKontrol = true
+local FiltreAracKontrol = false
 
-        local stroke = Instance.new("UIStroke")
-        stroke.Color = Color3.fromRGB(170, 172, 178)
-        stroke.Thickness = 1.5
-        stroke.Parent = btn
+-- [SATIR 129] Diger / Karakter / Dunya Ayarlari
+local AntiAimAktif = false
+local SahteGecikmeAktif = false
+local DesyncAktif = false
+local VurusSesiAktif = false
+local OldurmeSesiAktif = false
+local VurusIsaretiAktif = false
+local NisantahDegistirAktif = false
+local FovDegistirAktif = false
+local FpsSinirKaldirAktif = false
+local OtomatikDogmaAktif = false
+local IzleyiciModuAktif = false
+local YapilandirmaAktif = false
+local PanikButonuAktif = false
+local SeciliKameraFov = 85
 
-        local item = { Btn = btn, Locked = false, State = false }
-        KeyButtons[id] = item
+local KarakterEspAktif = false
+local KarakterKafaEspAktif = false
+local KarakterGovdeEspAktif = false
+local KarakterElEspAktif = false
+local KarakterBacakEspAktif = false
+local KiyafetEspAktif = false
+local AvatarEspAktif = false
+local OyuncuVurguAktif = false
+local OyuncuChamsAktif = false
 
-        btn.MouseButton1Click:Connect(function()
-            item.State = not item.State
-            if not item.Locked then
-                btn.BackgroundColor3 = item.State and Color3.fromRGB(70, 120, 185) or Color3.fromRGB(115, 118, 125)
-            else
-                lockDot.BackgroundColor3 = item.State and Color3.fromRGB(255, 225, 40) or Color3.fromRGB(205, 165, 15)
-            end
-            if onPress then onPress(item.State) end
-        end)
+local DunyaEspAktif = false
+local NesneEspAktif = false
+local KapiEspAktif = false
+local GanimetEspAktif = false
+local SilahBulucuAktif = false
+local EsyaBulucuAktif = false
+local RadarAktif = false
+local MiniHaritaAktif = false
+local TamAydinlikAktif = false
+local SisKaldirAktif = false
+local GeceGorusuAktif = false
 
-        local holdGen = 0
-        btn.InputBegan:Connect(function(inp)
-            if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-                holdGen += 1
-                local g = holdGen
-                task.delay(3, function()
-                    if g == holdGen then
-                        item.Locked = not item.Locked
-                        btn.Active = not item.Locked
-                        btn.Draggable = not item.Locked
-                        if item.Locked then
-                            lockDot.BackgroundColor3 = Color3.fromRGB(255, 215, 0) -- SARI (sabitlendi)
-                            stroke.Color = Color3.fromRGB(255, 215, 0)
-                            stroke.Thickness = 2.5
-                        else
-                            lockDot.BackgroundColor3 = Color3.fromRGB(145, 145, 150) -- GRI (serbest)
-                            stroke.Color = Color3.fromRGB(170, 172, 178)
-                            stroke.Thickness = 1.5
-                        end
-                    end
-                end)
-            end
-        end)
-
-        btn.InputEnded:Connect(function(inp)
-            if inp.UserInputType == Enum.UserInputType.Touch or inp.UserInputType == Enum.UserInputType.MouseButton1 then
-                holdGen += 1
-            end
-        end)
-    else
-        if KeyButtons[id] and KeyButtons[id].Btn then
-            KeyButtons[id].Btn:Destroy()
-            KeyButtons[id] = nil
-        end
-    end
-end
-
--- Her ozellik icin ac/kapa toggle + yaninda/altinda o tusu ekrana ac/kapa yapan toggle
-local function makeFeature(tab, name, id, tbl, field, onChange)
-    tab:CreateToggle({
-        Name = name,
-        CurrentValue = tbl[field] == true,
-        Callback = function(v)
-            tbl[field] = v
-            if KeyButtons[id] then KeyButtons[id].State = v end
-            if onChange then onChange(v) end
-        end
-    })
-
-    tab:CreateToggle({
-        Name = name .. " [Ekran Tusu Ac/Kapa]",
-        CurrentValue = false,
-        Callback = function(showKey)
-            setScreenKey(id, name, showKey, function(newState)
-                tbl[field] = newState
-                if onChange then onChange(newState) end
-            end)
-        end
-    })
-end
-
-local Window = Rayfield:CreateWindow({
-    Name = "Rayfield Pro Hub",
-    LoadingTitle = "Rayfield Yukleniyor...",
-    LoadingSubtitle = "Calisan Sistem • Tur & Yumusaklik",
+-- [SATIR 166] Rayfield Ana Penceresi (Turkce Sekmeler)
+local AnaPencere = Rayfield:CreateWindow({
+    Name = "Turkce Rayfield Hub",
+    LoadingTitle = "Turkce Rayfield Yukleniyor...",
+    LoadingSubtitle = "Aimbot • Hedef • ESP • Hareket • Silah",
     ConfigurationSaving = { Enabled = false }
 })
--- 1. AIMBOT / TARGETING
-local T1 = Window:CreateTab("Aimbot", 4483362458)
-T1:CreateDropdown({
-    Name = "Aimbot Turu",
-    Options = {"Legit", "Smooth", "Lock", "Rage"},
-    CurrentOption = {"Smooth"},
-    Callback = function(o) Cfg.AimType = o[1] end
+-- [SATIR 167] Sadece Hedef (Target) Sekmesi Icin Suruklenebilir Ekran Tusu Olusturucu
+local HedefTusGui = Instance.new("ScreenGui")
+HedefTusGui.Name = "HedefOzelEkranTuslari"
+HedefTusGui.ResetOnSpawn = false
+HedefTusGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+HedefTusGui.Parent = BenimOyuncu:WaitForChild("PlayerGui")
+
+local function HedefEkranTusuYonet(kimlik, yazi, acikMi, degisimFonksiyonu)
+    local mevcut = HedefTusGui:FindFirstChild("HedefTus_" .. kimlik)
+    if acikMi then
+        if mevcut then
+            mevcut.Visible = true
+            return
+        end
+        local tus = Instance.new("TextButton")
+        tus.Name = "HedefTus_" .. kimlik
+        tus.Size = UDim2.new(0, 104, 0, 40)
+        tus.Position = UDim2.new(0.18, 0, 0.25, 0)
+        tus.BackgroundColor3 = Color3.fromRGB(115, 118, 125)
+        tus.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tus.Text = yazi
+        tus.TextSize = 11
+        tus.Font = Enum.Font.GothamBold
+        tus.Active = true
+        tus.Draggable = true
+        tus.Parent = HedefTusGui
+        Instance.new("UICorner", tus).CornerRadius = UDim.new(0, 8)
+
+        local aktifDurum = false
+        tus.MouseButton1Click:Connect(function()
+            aktifDurum = not aktifDurum
+            tus.BackgroundColor3 = aktifDurum and Color3.fromRGB(55, 145, 225) or Color3.fromRGB(115, 118, 125)
+            if degisimFonksiyonu then
+                degisimFonksiyonu(aktifDurum)
+            end
+        end)
+    elseif mevcut then
+        mevcut:Destroy()
+    end
+end
+
+-- [SATIR 208] 1. SEKME: AIMBOT VE HEDEFLEME
+local AimbotSekmesi = AnaPencere:CreateTab("Aimbot", 4483362458)
+
+AimbotSekmesi:CreateDropdown({
+    Name = "Aimbot Turu Secimi",
+    Options = {"Normal Aim", "Legit Aim", "Yumusak Aim", "Rage Aim", "Hedef Kilitle"},
+    CurrentOption = {"Yumusak Aim"},
+    Callback = function(secim)
+        AimbotTuruSecili = secim[1]
+    end
 })
-T1:CreateSlider({
-    Name = "Yumusaklik (Smoothness)",
-    Range = {3, 100},
+
+AimbotSekmesi:CreateSlider({
+    Name = "Aimbot Yumusakligi",
+    Range = {2, 100},
     Increment = 1,
-    CurrentValue = 20,
-    Callback = function(v) Cfg.AimSmoothness = v / 100 end
+    CurrentValue = 18,
+    Callback = function(deger)
+        AimbotYumusakligi = deger / 100
+    end
 })
-T1:CreateSlider({
-    Name = "FOV Yaricapi",
+
+AimbotSekmesi:CreateSlider({
+    Name = "FOV Dairesi Buyuklugu",
     Range = {30, 500},
     Increment = 5,
-    CurrentValue = 160,
-    Callback = function(v) Cfg.AimFOV = v end
+    CurrentValue = 150,
+    Callback = function(deger)
+        AimbotFovYaricapi = deger
+    end
 })
-T1:CreateDropdown({
-    Name = "Aim Bone",
+
+AimbotSekmesi:CreateDropdown({
+    Name = "Aimbot Kemigi",
     Options = {"Head", "UpperTorso", "HumanoidRootPart"},
     CurrentOption = {"Head"},
-    Callback = function(o) Cfg.AimPart = o[1] end
-})
-makeFeature(T1, "Aimbot", "a1", Cfg.Aimbot, "Aimbot")
-makeFeature(T1, "Silent Aim", "a2", Cfg.Aimbot, "SilentAim")
-makeFeature(T1, "Legit Aim", "a3", Cfg.Aimbot, "LegitAim")
-makeFeature(T1, "Rage Aim", "a4", Cfg.Aimbot, "RageAim")
-makeFeature(T1, "Target Lock", "a5", Cfg.Aimbot, "TargetLock")
-makeFeature(T1, "Auto Shoot", "a6", Cfg.Aimbot, "AutoShoot")
-makeFeature(T1, "Triggerbot", "a7", Cfg.Aimbot, "Triggerbot")
-makeFeature(T1, "Smooth Aim", "a8", Cfg.Aimbot, "SmoothAim")
-makeFeature(T1, "FOV", "a9", Cfg.Aimbot, "FOV")
-makeFeature(T1, "Aim Prediction", "a10", Cfg.Aimbot, "AimPrediction")
-makeFeature(T1, "Nearest Target", "a11", Cfg.Aimbot, "NearestTarget")
-makeFeature(T1, "Target Switch", "a12", Cfg.Aimbot, "TargetSwitch")
-makeFeature(T1, "Visible Check", "a13", Cfg.Aimbot, "VisibleCheck")
-makeFeature(T1, "Team Check", "a14", Cfg.Aimbot, "TeamCheck")
-makeFeature(T1, "Friend Check", "a15", Cfg.Aimbot, "FriendCheck")
-makeFeature(T1, "Death Check", "a16", Cfg.Aimbot, "DeathCheck")
-makeFeature(T1, "Knocked Check", "a17", Cfg.Aimbot, "KnockedCheck")
-
--- 2. ESP / VISUALS
-local T2 = Window:CreateTab("ESP", 4483362458)
-makeFeature(T2, "Player ESP", "e1", Cfg.ESP, "PlayerESP")
-makeFeature(T2, "Box ESP", "e2", Cfg.ESP, "BoxESP")
-makeFeature(T2, "Skeleton ESP", "e3", Cfg.ESP, "SkeletonESP")
-makeFeature(T2, "Name ESP", "e4", Cfg.ESP, "NameESP")
-makeFeature(T2, "Health ESP", "e5", Cfg.ESP, "HealthESP")
-makeFeature(T2, "Distance ESP", "e6", Cfg.ESP, "DistanceESP")
-makeFeature(T2, "Tracer ESP", "e7", Cfg.ESP, "TracerESP")
-makeFeature(T2, "2D Box", "e8", Cfg.ESP, "Box2D")
-makeFeature(T2, "3D Box", "e9", Cfg.ESP, "Box3D")
-makeFeature(T2, "Head ESP", "e10", Cfg.ESP, "HeadESP")
-makeFeature(T2, "Snaplines", "e11", Cfg.ESP, "Snaplines")
-makeFeature(T2, "Chams", "e12", Cfg.ESP, "Chams")
-makeFeature(T2, "Glow ESP", "e13", Cfg.ESP, "GlowESP")
-makeFeature(T2, "Item ESP", "e14", Cfg.ESP, "ItemESP")
-makeFeature(T2, "Weapon ESP", "e15", Cfg.ESP, "WeaponESP")
-makeFeature(T2, "Enemy Only", "e16", Cfg.ESP, "EnemyOnly")
-makeFeature(T2, "Visible Only", "e17", Cfg.ESP, "VisibleOnly")
-
--- 3. MOVEMENT
-local T3 = Window:CreateTab("Movement", 4483362458)
-T3:CreateSlider({
-    Name = "Speed Hizi",
-    Range = {16, 120},
-    Increment = 1,
-    CurrentValue = 32,
-    Callback = function(v) Cfg.WalkSpeedVal = v end
-})
-T3:CreateSlider({
-    Name = "Super Jump Gucu",
-    Range = {50, 200},
-    Increment = 5,
-    CurrentValue = 85,
-    Callback = function(v) Cfg.JumpPowerVal = v end
-})
-T3:CreateSlider({
-    Name = "Gravity Degeri",
-    Range = {10, 196},
-    Increment = 2,
-    CurrentValue = 75,
-    Callback = function(v)
-        Cfg.GravityVal = v
-        if Cfg.Movement.GravityHack then Workspace.Gravity = v end
+    Callback = function(secim)
+        AimbotKemigiSecili = secim[1]
     end
 })
-T3:CreateSlider({
-    Name = "Fly Hizi",
-    Range = {15, 150},
-    Increment = 5,
-    CurrentValue = 50,
-    Callback = function(v) Cfg.FlySpeedVal = v end
-})
-makeFeature(T3, "Speed Hack", "m1", Cfg.Movement, "SpeedHack", function(v)
-    local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if h then h.WalkSpeed = v and Cfg.WalkSpeedVal or 16 end
-end)
-makeFeature(T3, "Fly Hack", "m2", Cfg.Movement, "FlyHack")
-makeFeature(T3, "Infinite Jump", "m3", Cfg.Movement, "InfiniteJump")
-makeFeature(T3, "No Clip", "m4", Cfg.Movement, "NoClip")
-makeFeature(T3, "Teleport", "m5", Cfg.Movement, "Teleport", function(v)
-    if v and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        local hrp = LocalPlayer.Character.HumanoidRootPart
-        local best, dMin = nil, math.huge
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-                local d = (p.Character.HumanoidRootPart.Position - hrp.Position).Magnitude
-                if d < dMin then dMin = d; best = p.Character.HumanoidRootPart end
-            end
-        end
-        if best then hrp.CFrame = best.CFrame * CFrame.new(0, 0, -4) end
-    end
-end)
-makeFeature(T3, "Super Jump", "m6", Cfg.Movement, "SuperJump", function(v)
-    local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-    if h then h.JumpPower = v and Cfg.JumpPowerVal or 50 end
-end)
-makeFeature(T3, "No Slow", "m7", Cfg.Movement, "NoSlow")
-makeFeature(T3, "Air Walk", "m8", Cfg.Movement, "AirWalk")
-makeFeature(T3, "Gravity Hack", "m9", Cfg.Movement, "GravityHack", function(v)
-    Workspace.Gravity = v and Cfg.GravityVal or 196.2
-end)
-makeFeature(T3, "Spinbot", "m10", Cfg.Movement, "Spinbot")
-makeFeature(T3, "Bunny Hop", "m11", Cfg.Movement, "BunnyHop")
-makeFeature(T3, "Anti Fall", "m12", Cfg.Movement, "AntiFall")
 
--- 4. WEAPON / COMBAT
-local T4 = Window:CreateTab("Weapon", 4483362458)
-makeFeature(T4, "No Recoil", "w1", Cfg.Weapon, "NoRecoil")
-makeFeature(T4, "No Spread", "w2", Cfg.Weapon, "NoSpread")
-makeFeature(T4, "Rapid Fire", "w3", Cfg.Weapon, "RapidFire")
-makeFeature(T4, "Fast Reload", "w4", Cfg.Weapon, "FastReload")
-makeFeature(T4, "Infinite Ammo", "w5", Cfg.Weapon, "InfiniteAmmo")
-makeFeature(T4, "No Reload", "w6", Cfg.Weapon, "NoReload")
-makeFeature(T4, "Damage Modifier", "w7", Cfg.Weapon, "DamageModifier")
-makeFeature(T4, "Hitbox Expander", "w8", Cfg.Weapon, "HitboxExpander")
-makeFeature(T4, "Melee Aura", "w9", Cfg.Weapon, "MeleeAura")
-makeFeature(T4, "Auto Kill", "w10", Cfg.Weapon, "AutoKill")
+AimbotSekmesi:CreateToggle({ Name = "FOV Dairesini Ekranda Goster", CurrentValue = false, Callback = function(v) FovDaireAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Aimbot", CurrentValue = false, Callback = function(v) AimbotAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Sessiz Aim (Silent Aim)", CurrentValue = false, Callback = function(v) SessizAimAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Legit Aim", CurrentValue = false, Callback = function(v) LegitAimAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Rage Aim", CurrentValue = false, Callback = function(v) RageAimAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Hedef Kilitle (Target Lock)", CurrentValue = false, Callback = function(v) HedefKilitleAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Otomatik Ates (Auto Shoot)", CurrentValue = false, Callback = function(v) OtomatikAtesAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Tetik Botu (Triggerbot)", CurrentValue = false, Callback = function(v) TetikBotuAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Yumusak Aim (Smooth Aim)", CurrentValue = false, Callback = function(v) YumusakAimAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Nisan Tahmini (Aim Prediction)", CurrentValue = false, Callback = function(v) NisantahminiAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "En Yakin Hedef", CurrentValue = false, Callback = function(v) EnYakinHedefAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Hedef Degistir", CurrentValue = false, Callback = function(v) HedefDegistirAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Gorunurluk Kontrolu", CurrentValue = true, Callback = function(v) GorunurlukKontrolAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Takim Kontrolu", CurrentValue = true, Callback = function(v) TakimKontrolAimAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Arkadas Kontrolu", CurrentValue = true, Callback = function(v) ArkadasKontrolAimAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Olum Kontrolu", CurrentValue = true, Callback = function(v) OlumKontrolAimAktif = v end })
+AimbotSekmesi:CreateToggle({ Name = "Baygin Kontrolu", CurrentValue = true, Callback = function(v) BayginKontrolAimAktif = v end })
 
--- 5. CHECKS / FILTERS
-local T5 = Window:CreateTab("Checks", 4483362458)
-makeFeature(T5, "Team Check", "c1", Cfg.Checks, "TeamCheck")
-makeFeature(T5, "Friend Check", "c2", Cfg.Checks, "FriendCheck")
-makeFeature(T5, "Enemy Check", "c3", Cfg.Checks, "EnemyCheck")
-makeFeature(T5, "Alive Check", "c4", Cfg.Checks, "AliveCheck")
-makeFeature(T5, "Dead Check", "c5", Cfg.Checks, "DeadCheck")
-makeFeature(T5, "Visibility Check", "c6", Cfg.Checks, "VisibilityCheck")
-makeFeature(T5, "Wall Check", "c7", Cfg.Checks, "WallCheck")
-makeFeature(T5, "Distance Check", "c8", Cfg.Checks, "DistanceCheck")
-makeFeature(T5, "Health Check", "c9", Cfg.Checks, "HealthCheck")
-makeFeature(T5, "NPC Check", "c10", Cfg.Checks, "NPCCheck")
-makeFeature(T5, "Bot Check", "c11", Cfg.Checks, "BotCheck")
-makeFeature(T5, "AFK Check", "c12", Cfg.Checks, "AFKCheck")
-makeFeature(T5, "Safe Zone Check", "c13", Cfg.Checks, "SafeZoneCheck")
-makeFeature(T5, "FOV Check", "c14", Cfg.Checks, "FOVCheck")
-makeFeature(T5, "Vehicle Check", "c15", Cfg.Checks, "VehicleCheck")
+-- [SATIR 262] 2. SEKME: HEDEF AYARLARI (TUS SADECE BURADA)
+local HedefSekmesi = AnaPencere:CreateTab("Hedef Ayarlari", 4483362458)
 
--- 6. MISC / OTHER
-local T6 = Window:CreateTab("Misc", 4483362458)
-T6:CreateSlider({
-    Name = "Kamera FOV Degeri",
-    Range = {50, 120},
-    Increment = 1,
-    CurrentValue = 85,
-    Callback = function(v)
-        Cfg.FOVVal = v
-        if Cfg.Misc.FOVChanger and Camera then Camera.FieldOfView = v end
-    end
-})
-makeFeature(T6, "Anti-Aim", "x1", Cfg.Misc, "AntiAim")
-makeFeature(T6, "Fake Lag", "x2", Cfg.Misc, "FakeLag")
-makeFeature(T6, "Desync", "x3", Cfg.Misc, "Desync")
-makeFeature(T6, "Hit Sound", "x4", Cfg.Misc, "HitSound")
-makeFeature(T6, "Kill Sound", "x5", Cfg.Misc, "KillSound")
-makeFeature(T6, "Hit Marker", "x6", Cfg.Misc, "HitMarker")
-makeFeature(T6, "Crosshair Changer", "x7", Cfg.Misc, "CrosshairChanger")
-makeFeature(T6, "FOV Changer", "x8", Cfg.Misc, "FOVChanger", function(v)
-    if Camera then Camera.FieldOfView = v and Cfg.FOVVal or 70 end
-end)
-makeFeature(T6, "FPS Unlocker", "x9", Cfg.Misc, "FPSUnlocker", function(v)
-    if setfpscap then setfpscap(v and 240 or 60) end
-end)
-makeFeature(T6, "Auto Respawn", "x10", Cfg.Misc, "AutoRespawn")
-makeFeature(T6, "Spectator Mode", "x11", Cfg.Misc, "SpectatorMode")
-makeFeature(T6, "Config System", "x12", Cfg.Misc, "ConfigSystem")
-makeFeature(T6, "Panic Button", "x13", Cfg.Misc, "PanicButton", function(on)
-    if on then
-        for k, grp in pairs(Cfg) do
-            if type(grp) == "table" then
-                for f, val in pairs(grp) do
-                    if type(val) == "boolean" then grp[f] = false end
-                end
-            end
-        end
-        Workspace.Gravity = 196.2
-        if Camera then Camera.FieldOfView = 70 end
-    end
-end)
-
--- 7. PLAYER / CHARACTER
-local T7 = Window:CreateTab("Character", 4483362458)
-makeFeature(T7, "Character ESP", "p1", Cfg.Character, "CharacterESP")
-makeFeature(T7, "Head ESP", "p2", Cfg.Character, "HeadESP")
-makeFeature(T7, "Body ESP", "p3", Cfg.Character, "BodyESP")
-makeFeature(T7, "Hand ESP", "p4", Cfg.Character, "HandESP")
-makeFeature(T7, "Leg ESP", "p5", Cfg.Character, "LegESP")
-makeFeature(T7, "Outfit ESP", "p6", Cfg.Character, "OutfitESP")
-makeFeature(T7, "Avatar ESP", "p7", Cfg.Character, "AvatarESP")
-makeFeature(T7, "Player Highlight", "p8", Cfg.Character, "PlayerHighlight")
-makeFeature(T7, "Player Chams", "p9", Cfg.Character, "PlayerChams")
-
--- 8. WORLD / ENVIRONMENT
-local T8 = Window:CreateTab("World", 4483362458)
-makeFeature(T8, "World ESP", "d1", Cfg.World, "WorldESP")
-makeFeature(T8, "Object ESP", "d2", Cfg.World, "ObjectESP")
-makeFeature(T8, "Door ESP", "d3", Cfg.World, "DoorESP")
-makeFeature(T8, "Loot ESP", "d4", Cfg.World, "LootESP")
-makeFeature(T8, "Weapon Finder", "d5", Cfg.World, "WeaponFinder")
-makeFeature(T8, "Item Finder", "d6", Cfg.World, "ItemFinder")
-makeFeature(T8, "Radar", "d7", Cfg.World, "Radar")
-makeFeature(T8, "Minimap", "d8", Cfg.World, "Minimap")
-makeFeature(T8, "Fullbright", "d9", Cfg.World, "Fullbright", function(v)
-    if v then
-        Lighting.Brightness = 2.5
-        Lighting.ClockTime = 14
-        Lighting.GlobalShadows = false
-    end
-end)
-makeFeature(T8, "No Fog", "d10", Cfg.World, "NoFog", function(v)
-    Lighting.FogEnd = v and 1e6 or 500
-end)
-makeFeature(T8, "Night Vision", "d11", Cfg.World, "NightVision", function(v)
-    Lighting.Ambient = v and Color3.fromRGB(65, 220, 120) or Color3.fromRGB(0, 0, 0)
-end)
-
--- 9. TARGET SETTINGS
-local T9 = Window:CreateTab("TargetSet", 4483362458)
-T9:CreateDropdown({
-    Name = "Target Part",
+HedefSekmesi:CreateDropdown({
+    Name = "Hedef Bolgesi",
     Options = {"Head", "UpperTorso", "HumanoidRootPart"},
     CurrentOption = {"Head"},
-    Callback = function(o) Cfg.AimPart = o[1] end
+    Callback = function(secim)
+        HedefBolgeSecili = secim[1]
+        AimbotKemigiSecili = secim[1]
+    end
 })
-T9:CreateDropdown({
-    Name = "Target Priority",
-    Options = {"Closest", "LowestHealth", "FOV"},
-    CurrentOption = {"Closest"},
-    Callback = function(o) Cfg.TargetPriority = o[1] end
+
+HedefSekmesi:CreateDropdown({
+    Name = "Hedef Onceligi",
+    Options = {"En Yakin", "En Dusuk Can", "FOV Ici"},
+    CurrentOption = {"En Yakin"},
+    Callback = function(secim)
+        HedefOnceligiSecili = secim[1]
+    end
 })
-T9:CreateDropdown({
-    Name = "Target Team",
-    Options = {"Enemies", "All", "NonTeam"},
-    CurrentOption = {"Enemies"},
-    Callback = function(o) Cfg.TargetTeamMode = o[1] end
+
+HedefSekmesi:CreateSlider({
+    Name = "Hedef Mesafe Siniri",
+    Range = {20, 1000},
+    Increment = 10,
+    CurrentValue = 300,
+    Callback = function(deger)
+        HedefMesafesiSiniri = deger
+    end
 })
-T9:CreateDropdown({
-    Name = "Target Filter",
-    Options = {"Standard", "WhitelistOnly", "BlacklistSkip"},
-    CurrentOption = {"Standard"},
-    Callback = function(o) Cfg.TargetFilterMode = o[1] end
+
+HedefSekmesi:CreateDropdown({
+    Name = "Hedef Takim Modu",
+    Options = {"Dusmanlar", "Herkes", "Takim Disi"},
+    CurrentOption = {"Dusmanlar"},
+    Callback = function(secim)
+        HedefTakimModu = secim[1]
+    end
 })
-makeFeature(T9, "Target Visibility", "t1", Cfg.TargetSet, "TargetVisibility")
-T9:CreateInput({
-    Name = "Target Ignore List",
+
+HedefSekmesi:CreateToggle({
+    Name = "Hedef Gorunurluk Kontrolu",
+    CurrentValue = false,
+    Callback = function(v) HedefGorunurlukAktif = v end
+})
+HedefSekmesi:CreateToggle({
+    Name = "Hedef Gorunurluk Ekran Tusu",
+    CurrentValue = false,
+    Callback = function(v)
+        HedefGorunurlukTusAktif = v
+        HedefEkranTusuYonet("gorunurluk", "HEDEF VIS", v, function(durum)
+            HedefGorunurlukAktif = durum
+        end)
+    end
+})
+
+HedefSekmesi:CreateToggle({
+    Name = "Hedef Kilitle Ekran Tusu",
+    CurrentValue = false,
+    Callback = function(v)
+        HedefKilitleTusAktif = v
+        HedefEkranTusuYonet("kilitle", "HEDEF KILIT", v, function(durum)
+            HedefKilitleAktif = durum
+        end)
+    end
+})
+
+HedefSekmesi:CreateToggle({
+    Name = "Hedef Degistir Ekran Tusu",
+    CurrentValue = false,
+    Callback = function(v)
+        HedefDegistirTusAktif = v
+        HedefEkranTusuYonet("degistir", "HEDEF DEGIS", v, function(durum)
+            HedefDegistirAktif = durum
+        end)
+    end
+})
+
+HedefSekmesi:CreateInput({
+    Name = "Yok Sayilan Oyuncular",
     PlaceholderText = "Isim1, Isim2",
     RemoveTextAfterFocusLost = false,
-    Callback = function(t) Cfg.IgnoreList = t end
+    Callback = function(metin) YokSayilanIsimlerMetni = metin end
 })
-T9:CreateInput({
-    Name = "Target Whitelist",
+
+HedefSekmesi:CreateInput({
+    Name = "Beyaz Liste (Whitelist)",
     PlaceholderText = "Isim1, Isim2",
     RemoveTextAfterFocusLost = false,
-    Callback = function(t) Cfg.Whitelist = t end
+    Callback = function(metin) BeyazListeIsimlerMetni = metin end
 })
-T9:CreateInput({
-    Name = "Target Blacklist",
+
+HedefSekmesi:CreateInput({
+    Name = "Kara Liste (Blacklist)",
     PlaceholderText = "Isim1, Isim2",
     RemoveTextAfterFocusLost = false,
-    Callback = function(t) Cfg.Blacklist = t end
+    Callback = function(metin) KaraListeIsimlerMetni = metin end
 })
-local function inCsv(name, csv)
-    if not csv or csv == "" then return false end
-    local low = name:lower()
-    for part in string.gmatch(csv, "[^,]+") do
-        if part:gsub("^%s+", ""):gsub("%s+$", ""):lower() == low then
-            return true
-        end
+-- [SATIR 336] 3. SEKME: ESP VE GORSEL
+local EspSekmesi = AnaPencere:CreateTab("ESP", 4483362458)
+EspSekmesi:CreateToggle({ Name = "Oyuncu ESP", CurrentValue = false, Callback = function(v) OyuncuEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Kutu ESP", CurrentValue = false, Callback = function(v) KutuEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Iskelet ESP", CurrentValue = false, Callback = function(v) IskeletEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Isim ESP", CurrentValue = false, Callback = function(v) IsimEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Can ESP", CurrentValue = false, Callback = function(v) CanEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Mesafe ESP", CurrentValue = false, Callback = function(v) MesafeEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Cizgi ESP (Tracer)", CurrentValue = false, Callback = function(v) CizgiEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "2D Kutu", CurrentValue = false, Callback = function(v) Kutu2DEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "3D Kutu", CurrentValue = false, Callback = function(v) Kutu3DEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Kafa ESP", CurrentValue = false, Callback = function(v) KafaEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Snaplines", CurrentValue = false, Callback = function(v) SnaplineEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Chams", CurrentValue = false, Callback = function(v) ChamsEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Parlama ESP", CurrentValue = false, Callback = function(v) ParlamaEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Esya ESP", CurrentValue = false, Callback = function(v) EsyaEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Silah ESP", CurrentValue = false, Callback = function(v) SilahEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Sadece Dusmanlar", CurrentValue = true, Callback = function(v) SadeceDusmanEspAktif = v end })
+EspSekmesi:CreateToggle({ Name = "Sadece Gorunenler", CurrentValue = false, Callback = function(v) SadeceGorunenEspAktif = v end })
+
+-- [SATIR 355] 4. SEKME: HAREKET
+local HareketSekmesi = AnaPencere:CreateTab("Hareket", 4483362458)
+HareketSekmesi:CreateSlider({ Name = "Kosma Hizi", Range = {16, 120}, Increment = 1, CurrentValue = 32, Callback = function(v) SeciliHizDegeri = v end })
+HareketSekmesi:CreateSlider({ Name = "Ziplama Gucu", Range = {50, 200}, Increment = 5, CurrentValue = 85, Callback = function(v) SeciliZiplamaDegeri = v end })
+HareketSekmesi:CreateSlider({ Name = "Ucus Hizi", Range = {15, 150}, Increment = 5, CurrentValue = 55, Callback = function(v) SeciliUcusHizi = v end })
+HareketSekmesi:CreateSlider({ Name = "Yercekimi", Range = {10, 196}, Increment = 2, CurrentValue = 75, Callback = function(v) SeciliYercekimi = v end })
+HareketSekmesi:CreateToggle({ Name = "Hiz Hilesi", CurrentValue = false, Callback = function(v) HizHilesiAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Ucus Hilesi", CurrentValue = false, Callback = function(v) UcusHilesiAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Sinirsiz Ziplama", CurrentValue = false, Callback = function(v) SinirsizZiplamaAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Duvar Gecisi (No Clip)", CurrentValue = false, Callback = function(v) DuvarGecisiAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "En Yakina Isinlan", CurrentValue = false, Callback = function(v) IsinlanmaAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Super Ziplama", CurrentValue = false, Callback = function(v) SuperZiplamaAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Yavaslama Kaldir", CurrentValue = false, Callback = function(v) YavaslamaKaldirAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Havada Yurume", CurrentValue = false, Callback = function(v) HavadaYurumeAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Yercekimi Hilesi", CurrentValue = false, Callback = function(v) YercekimiHilesiAktif = v; DunyaServisi.Gravity = v and SeciliYercekimi or 196.2 end })
+HareketSekmesi:CreateToggle({ Name = "Spinbot", CurrentValue = false, Callback = function(v) SpinbotAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Bunny Hop", CurrentValue = false, Callback = function(v) TavsanZiplamaAktif = v end })
+HareketSekmesi:CreateToggle({ Name = "Dusme Koruma", CurrentValue = false, Callback = function(v) DusmeKorumaAktif = v end })
+
+-- [SATIR 375] 5. SEKME: SILAH VE SAVAS
+local SilahSekmesi = AnaPencere:CreateTab("Silah", 4483362458)
+SilahSekmesi:CreateToggle({ Name = "Sekme Kaldir (No Recoil)", CurrentValue = false, Callback = function(v) SekmeKaldirAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Dagilma Kaldir (No Spread)", CurrentValue = false, Callback = function(v) DagilmaKaldirAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Hizli Ates", CurrentValue = false, Callback = function(v) HizliAtesAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Hizli Sarjor", CurrentValue = false, Callback = function(v) HizliSarjorAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Sinirsiz Mermi", CurrentValue = false, Callback = function(v) SinirsizMermiAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Sarjor Yok", CurrentValue = false, Callback = function(v) SarjorYokAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Hasar Degistirici", CurrentValue = false, Callback = function(v) HasarDegistirAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Hitbox Buyutucu", CurrentValue = false, Callback = function(v) HitboxBuyutAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Yakin Dovus Aura", CurrentValue = false, Callback = function(v) YakinDovusAuraAktif = v end })
+SilahSekmesi:CreateToggle({ Name = "Otomatik Oldur", CurrentValue = false, Callback = function(v) OtomatikOldurAktif = v end })
+
+-- [SATIR 387] 6. SEKME: KONTROLLER VE FILTRELER
+local FiltreSekmesi = AnaPencere:CreateTab("Kontroller", 4483362458)
+FiltreSekmesi:CreateToggle({ Name = "Takim Kontrolu", CurrentValue = true, Callback = function(v) FiltreTakimKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Arkadas Kontrolu", CurrentValue = true, Callback = function(v) FiltreArkadasKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Dusman Kontrolu", CurrentValue = true, Callback = function(v) FiltreDusmanKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Canli Kontrolu", CurrentValue = true, Callback = function(v) FiltreCanliKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Olu Kontrolu", CurrentValue = true, Callback = function(v) FiltreOluKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Gorunurluk Kontrolu", CurrentValue = true, Callback = function(v) FiltreGorunurKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Duvar Kontrolu", CurrentValue = true, Callback = function(v) FiltreDuvarKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Mesafe Kontrolu", CurrentValue = false, Callback = function(v) FiltreMesafeKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Can Kontrolu", CurrentValue = false, Callback = function(v) FiltreCanKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "NPC Kontrolu", CurrentValue = false, Callback = function(v) FiltreNpcKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Bot Kontrolu", CurrentValue = false, Callback = function(v) FiltreBotKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "AFK Kontrolu", CurrentValue = false, Callback = function(v) FiltreAfkKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Guvenli Bolge Kontrolu", CurrentValue = false, Callback = function(v) FiltreGuvenliBolgeKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "FOV Kontrolu", CurrentValue = true, Callback = function(v) FiltreFovKontrol = v end })
+FiltreSekmesi:CreateToggle({ Name = "Arac Kontrolu", CurrentValue = false, Callback = function(v) FiltreAracKontrol = v end })
+
+-- [SATIR 404] 7. SEKME: DIGER, KARAKTER VE DUNYA
+local DigerSekmesi = AnaPencere:CreateTab("Diger & Dunya", 4483362458)
+DigerSekmesi:CreateSlider({ Name = "Kamera FOV", Range = {50, 120}, Increment = 1, CurrentValue = 85, Callback = function(v) SeciliKameraFov = v; if FovDegistirAktif and AktifKamera then AktifKamera.FieldOfView = v end end })
+DigerSekmesi:CreateToggle({ Name = "Kamera FOV Degistir", CurrentValue = false, Callback = function(v) FovDegistirAktif = v; if AktifKamera then AktifKamera.FieldOfView = v and SeciliKameraFov or 70 end end })
+DigerSekmesi:CreateToggle({ Name = "Tam Aydinlik (Fullbright)", CurrentValue = false, Callback = function(v) TamAydinlikAktif = v; if v then AydinlatmaServisi.Brightness = 2.5; AydinlatmaServisi.ClockTime = 14; AydinlatmaServisi.GlobalShadows = false end end })
+DigerSekmesi:CreateToggle({ Name = "Sis Kaldir (No Fog)", CurrentValue = false, Callback = function(v) SisKaldirAktif = v; AydinlatmaServisi.FogEnd = v and 1e6 or 500 end })
+DigerSekmesi:CreateToggle({ Name = "Gece Gorusu", CurrentValue = false, Callback = function(v) GeceGorusuAktif = v; AydinlatmaServisi.Ambient = v and Color3.fromRGB(65, 220, 120) or Color3.fromRGB(0, 0, 0) end })
+DigerSekmesi:CreateToggle({ Name = "Karakter & Vurgu ESP", CurrentValue = false, Callback = function(v) KarakterEspAktif = v; OyuncuVurguAktif = v; OyuncuChamsAktif = v end })
+DigerSekmesi:CreateToggle({ Name = "Dunya & Ganimet ESP", CurrentValue = false, Callback = function(v) DunyaEspAktif = v; GanimetEspAktif = v; EsyaBulucuAktif = v; SilahBulucuAktif = v end })
+DigerSekmesi:CreateToggle({ Name = "Anti-Aim", CurrentValue = false, Callback = function(v) AntiAimAktif = v end })
+DigerSekmesi:CreateToggle({ Name = "Vurus / Oldurme Sesi", CurrentValue = false, Callback = function(v) VurusSesiAktif = v; OldurmeSesiAktif = v end })
+DigerSekmesi:CreateToggle({ Name = "FPS Siniri Kaldir", CurrentValue = false, Callback = function(v) FpsSinirKaldirAktif = v; if setfpscap then setfpscap(v and 240 or 60) end end })
+-- [SATIR 416] Ekranda FOV Dairesi (Drawing Destegi Varsa)
+local FovDaireCizimi = nil
+if Drawing then
+    FovDaireCizimi = Drawing.new("Circle")
+    FovDaireCizimi.Thickness = 1.8
+    FovDaireCizimi.NumSides = 64
+    FovDaireCizimi.Filled = false
+    FovDaireCizimi.Visible = false
+    FovDaireCizimi.Color = FovDaireRengi
+end
+
+-- [SATIR 428] Isim Liste Kontrolu ve Takim / Gorunurluk Yardimcilari
+local function ListeIcindeMi(oyuncuAdi, listeMetni)
+    if not listeMetni or listeMetni == "" then return false end
+    local aranan = oyuncuAdi:lower()
+    for parca in string.gmatch(listeMetni, "[^,]+") do
+        local temiz = parca:gsub("^%s+", ""):gsub("%s+$", ""):lower()
+        if temiz == aranan then return true end
     end
     return false
 end
 
-local function isEnemy(plr)
-    if not plr or plr == LocalPlayer then return false end
-    if Cfg.TargetTeamMode == "All" then return true end
-    if (Cfg.Aimbot.TeamCheck or Cfg.Checks.TeamCheck) and LocalPlayer.Team and plr.Team then
-        return plr.Team ~= LocalPlayer.Team
+local function DusmanMi(oyuncu)
+    if not oyuncu or oyuncu == BenimOyuncu then return false end
+    if HedefTakimModu == "Herkes" then return true end
+    if (TakimKontrolAimAktif or FiltreTakimKontrol) and BenimOyuncu.Team and oyuncu.Team then
+        return oyuncu.Team ~= BenimOyuncu.Team
     end
     return true
 end
 
-local function isFriend(plr)
-    if not plr then return false end
-    local ok, res = pcall(function() return LocalPlayer:IsFriendsWith(plr.UserId) end)
-    return ok and res or false
+local function ArkadasMi(oyuncu)
+    if not oyuncu then return false end
+    local basarili, sonuc = pcall(function() return BenimOyuncu:IsFriendsWith(oyuncu.UserId) end)
+    return basarili and sonuc or false
 end
 
-local function isVisible(targetPart)
-    if not Camera or not targetPart then return true end
-    local params = RaycastParams.new()
-    params.FilterType = Enum.RaycastFilterType.Exclude
-    local ignore = {}
-    if LocalPlayer.Character then table.insert(ignore, LocalPlayer.Character) end
-    if targetPart.Parent then table.insert(ignore, targetPart.Parent) end
-    params.FilterDescendantsInstances = ignore
-
-    local origin = Camera.CFrame.Position
-    local dir = targetPart.Position - origin
-    local hit = Workspace:Raycast(origin, dir, params)
-    return hit == nil
+local function GorunurMu(hedefParca)
+    if not AktifKamera or not hedefParca then return true end
+    local rayParam = RaycastParams.new()
+    rayParam.FilterType = Enum.RaycastFilterType.Exclude
+    local haricler = {}
+    if BenimOyuncu.Character then table.insert(haricler, BenimOyuncu.Character) end
+    if hedefParca.Parent then table.insert(haricler, hedefParca.Parent) end
+    rayParam.FilterDescendantsInstances = haricler
+    local baslangic = AktifKamera.CFrame.Position
+    local yon = hedefParca.Position - baslangic
+    local carpisma = DunyaServisi:Raycast(baslangic, yon, rayParam)
+    return carpisma == nil
 end
 
-local function getTarget()
-    if not Camera then return nil end
-    local center = Vector2.new(Camera.ViewportSize.X * 0.5, Camera.ViewportSize.Y * 0.5)
-    local bestPart = nil
-    local bestMetric = math.huge
+-- [SATIR 468] Aktif Hedefi Secme Fonksiyonu
+local function HedefSec()
+    if not AktifKamera then return nil end
+    local ekranMerkezi = Vector2.new(AktifKamera.ViewportSize.X * 0.5, AktifKamera.ViewportSize.Y * 0.5)
+    local secilenParca = nil
+    local enIyiPuan = math.huge
 
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character then
-            if inCsv(plr.Name, Cfg.IgnoreList) then continue end
-            if Cfg.TargetFilterMode == "WhitelistOnly" and not inCsv(plr.Name, Cfg.Whitelist) then continue end
-            if Cfg.TargetFilterMode == "BlacklistSkip" and inCsv(plr.Name, Cfg.Blacklist) then continue end
+    for _, oyuncu in ipairs(OyuncularServisi:GetPlayers()) do
+        if oyuncu ~= BenimOyuncu and oyuncu.Character then
+            if ListeIcindeMi(oyuncu.Name, YokSayilanIsimlerMetni) then continue end
+            if HedefFiltreModu == "Beyaz Liste" and not ListeIcindeMi(oyuncu.Name, BeyazListeIsimlerMetni) then continue end
+            if HedefFiltreModu == "Kara Liste" and ListeIcindeMi(oyuncu.Name, KaraListeIsimlerMetni) then continue end
 
-            local char = plr.Character
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            local part = char:FindFirstChild(Cfg.AimPart) or char:FindFirstChild("HumanoidRootPart")
+            local karakter = oyuncu.Character
+            local canInsani = karakter:FindFirstChildOfClass("Humanoid")
+            local parca = karakter:FindFirstChild(HedefBolgeSecili) or karakter:FindFirstChild(AimbotKemigiSecili) or karakter:FindFirstChild("HumanoidRootPart")
 
-            local aliveOk = not Cfg.Checks.AliveCheck or (hum and hum.Health > 0)
-            local enemyOk = not (Cfg.ESP.EnemyOnly or Cfg.Checks.EnemyCheck) or isEnemy(plr)
-            local friendOk = not ((Cfg.Aimbot.FriendCheck or Cfg.Checks.FriendCheck) and isFriend(plr))
-            local visOk = not ((Cfg.Aimbot.VisibleCheck or Cfg.Checks.VisibilityCheck or Cfg.TargetSet.TargetVisibility) and not isVisible(part))
+            local canliOk = not (OlumKontrolAimAktif or FiltreCanliKontrol) or (canInsani and canInsani.Health > 0)
+            local dusmanOk = not (TakimKontrolAimAktif or FiltreDusmanKontrol) or DusmanMi(oyuncu)
+            local arkadasOk = not ((ArkadasKontrolAimAktif or FiltreArkadasKontrol) and ArkadasMi(oyuncu))
+            local gorunurOk = not ((GorunurlukKontrolAimAktif or FiltreGorunurlukKontrol or HedefGorunurlukAktif) and not GorunurMu(parca))
 
-            if aliveOk and enemyOk and friendOk and visOk and part then
-                local screenPt, onScreen = Camera:WorldToViewportPoint(part.Position)
-                if onScreen and screenPt.Z > 0 then
-                    local fovDist = (Vector2.new(screenPt.X, screenPt.Y) - center).Magnitude
-                    if fovDist <= Cfg.AimFOV then
-                        local metric = fovDist
-                        if Cfg.TargetPriority == "Closest" then
-                            metric = (part.Position - Camera.CFrame.Position).Magnitude
-                        elseif Cfg.TargetPriority == "LowestHealth" and hum then
-                            metric = hum.Health
-                        end
-                        if metric < bestMetric then
-                            bestMetric = metric
-                            bestPart = part
+            if canliOk and dusmanOk and arkadasOk and gorunurOk and parca then
+                local dunyaMesafe = (parca.Position - AktifKamera.CFrame.Position).Magnitude
+                if dunyaMesafe <= HedefMesafesiSiniri then
+                    local ekranKonum, ekranda = AktifKamera:WorldToViewportPoint(parca.Position)
+                    if ekranda and ekranKonum.Z > 0 then
+                        local fovFarki = (Vector2.new(ekranKonum.X, ekranKonum.Y) - ekranMerkezi).Magnitude
+                        if not FiltreFovKontrol or fovFarki <= AimbotFovYaricapi then
+                            local puan = dunyaMesafe
+                            if HedefOnceligiSecili == "En Dusuk Can" and canInsani then
+                                puan = canInsani.Health
+                            elseif HedefOnceligiSecili == "FOV Ici" then
+                                puan = fovFarki
+                            end
+                            if puan < enIyiPuan then
+                                enIyiPuan = puan
+                                secilenParca = parca
+                            end
                         end
                     end
                 end
             end
         end
     end
-    return bestPart
+
+    return secilenParca
 end
 
-local highlights = {}
-local function updateESP()
-    local espActive = Cfg.ESP.PlayerESP or Cfg.ESP.Chams or Cfg.ESP.GlowESP or Cfg.Character.CharacterESP or Cfg.Character.PlayerHighlight or Cfg.Character.PlayerChams
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character then
-            local show = espActive and (not Cfg.ESP.EnemyOnly or isEnemy(plr))
-            local hl = highlights[plr]
-            if show then
-                if not hl or not hl.Parent then
-                    hl = Instance.new("Highlight")
-                    hl.FillTransparency = 0.65
-                    hl.OutlineTransparency = 0
-                    hl.Parent = plr.Character
-                    highlights[plr] = hl
+-- [SATIR 505] ESP Vurgulama Sistemi
+local EspVurgulari = {}
+local function EspGuncelle()
+    local herhangiEspAcik = OyuncuEspAktif or KutuEspAktif or Kutu2DEspAktif or Kutu3DEspAktif or ChamsEspAktif or ParlamaEspAktif or KarakterEspAktif or OyuncuVurguAktif or OyuncuChamsAktif
+    for _, oyuncu in ipairs(OyuncularServisi:GetPlayers()) do
+        if oyuncu ~= BenimOyuncu and oyuncu.Character then
+            local goster = herhangiEspAcik and (not SadeceDusmanEspAktif or DusmanMi(oyuncu))
+            local mevcutVurgu = EspVurgulari[oyuncu]
+            if goster then
+                if not mevcutVurgu or not mevcutVurgu.Parent then
+                    mevcutVurgu = Instance.new("Highlight")
+                    mevcutVurgu.FillTransparency = 0.65
+                    mevcutVurgu.OutlineTransparency = 0
+                    mevcutVurgu.Parent = oyuncu.Character
+                    EspVurgulari[oyuncu] = mevcutVurgu
                 end
-                hl.FillColor = isEnemy(plr) and Color3.fromRGB(255, 65, 65) or Color3.fromRGB(65, 220, 120)
-            elseif hl then
-                hl:Destroy()
-                highlights[plr] = nil
+                mevcutVurgu.FillColor = DusmanMi(oyuncu) and Color3.fromRGB(255, 65, 65) or Color3.fromRGB(65, 220, 120)
+            elseif mevcutVurgu then
+                mevcutVurgu:Destroy()
+                EspVurgulari[oyuncu] = nil
             end
         end
     end
 end
 
-local airPart = Instance.new("Part")
-airPart.Name = "AirWalkPlatform"
-airPart.Size = Vector3.new(8, 1, 8)
-airPart.Anchored = true
-airPart.CanCollide = true
-airPart.Transparency = 1
-airPart.Parent = Workspace
+-- [SATIR 526] Havada Yurume ve Ziplama Baglantilari
+local YurumePlatformu = Instance.new("Part")
+YurumePlatformu.Name = "TurkceHubAirWalk"
+YurumePlatformu.Size = Vector3.new(8, 1, 8)
+YurumePlatformu.Anchored = true
+YurumePlatformu.CanCollide = true
+YurumePlatformu.Transparency = 1
+YurumePlatformu.Parent = DunyaServisi
 
-UserInputService.JumpRequest:Connect(function()
-    if Cfg.Movement.InfiniteJump or Cfg.Movement.BunnyHop then
-        local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        if h then h:ChangeState(Enum.HumanoidStateType.Jumping) end
+GirisServisi.JumpRequest:Connect(function()
+    if SinirsizZiplamaAktif or TavsanZiplamaAktif then
+        local insani = BenimOyuncu.Character and BenimOyuncu.Character:FindFirstChildOfClass("Humanoid")
+        if insani then insani:ChangeState(Enum.HumanoidStateType.Jumping) end
     end
 end)
 
-RunService.RenderStepped:Connect(function(dt)
-    updateESP()
+-- [SATIR 542] Ana Kare Dongusu
+CalismaServisi.RenderStepped:Connect(function()
+    EspGuncelle()
 
-    local char = LocalPlayer.Character
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")
-
-    if hum then
-        if Cfg.Movement.SpeedHack then hum.WalkSpeed = Cfg.WalkSpeedVal end
-        if Cfg.Movement.SuperJump then hum.JumpPower = Cfg.JumpPowerVal end
-        if Cfg.Movement.NoSlow and hum.WalkSpeed < 16 then hum.WalkSpeed = 16 end
+    if FovDaireCizimi and AktifKamera then
+        FovDaireCizimi.Visible = FovDaireAktif
+        FovDaireCizimi.Radius = AimbotFovYaricapi
+        FovDaireCizimi.Position = Vector2.new(AktifKamera.ViewportSize.X * 0.5, AktifKamera.ViewportSize.Y * 0.5)
+        FovDaireCizimi.Color = FovDaireRengi
     end
 
-    if char and Cfg.Movement.NoClip then
-        for _, p in ipairs(char:GetDescendants()) do
-            if p:IsA("BasePart") then p.CanCollide = false end
+    local karakter = BenimOyuncu.Character
+    local insani = karakter and karakter:FindFirstChildOfClass("Humanoid")
+    local kokParca = karakter and karakter:FindFirstChild("HumanoidRootPart")
+
+    if insani then
+        if HizHilesiAktif then insani.WalkSpeed = SeciliHizDegeri end
+        if SuperZiplamaAktif then insani.JumpPower = SeciliZiplamaDegeri end
+        if YavaslamaKaldirAktif and insani.WalkSpeed < 16 then insani.WalkSpeed = 16 end
+    end
+
+    if karakter and DuvarGecisiAktif then
+        for _, parca in ipairs(karakter:GetDescendants()) do
+            if parca:IsA("BasePart") then parca.CanCollide = false end
         end
     end
 
-    if hrp then
-        if Cfg.Movement.AirWalk then
-            airPart.Position = hrp.Position - Vector3.new(0, 3.5, 0)
+    if kokParca then
+        if HavadaYurumeAktif then
+            YurumePlatformu.Position = kokParca.Position - Vector3.new(0, 3.5, 0)
         else
-            airPart.Position = Vector3.new(0, -5000, 0)
+            YurumePlatformu.Position = Vector3.new(0, -5000, 0)
         end
 
-        if Cfg.Movement.FlyHack then
-            local moveDir = hum and hum.MoveDirection or Vector3.zero
-            hrp.Velocity = moveDir * Cfg.FlySpeedVal + Vector3.new(0, 2, 0)
+        if UcusHilesiAktif then
+            local yon = insani and insani.MoveDirection or Vector3.zero
+            kokParca.AssemblyLinearVelocity = yon * SeciliUcusHizi + Vector3.new(0, 2, 0)
         end
 
-        if Cfg.Movement.Spinbot or Cfg.Misc.AntiAim then
-            hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(20), 0)
+        if SpinbotAktif or AntiAimAktif then
+            kokParca.CFrame = kokParca.CFrame * CFrame.Angles(0, math.rad(20), 0)
         end
 
-        if Cfg.Movement.AntiFall and hrp.AssemblyLinearVelocity.Y < -65 then
-            hrp.AssemblyLinearVelocity = Vector3.new(hrp.AssemblyLinearVelocity.X, -15, hrp.AssemblyLinearVelocity.Z)
+        if DusmeKorumaAktif and kokParca.AssemblyLinearVelocity.Y < -65 then
+            kokParca.AssemblyLinearVelocity = Vector3.new(kokParca.AssemblyLinearVelocity.X, -15, kokParca.AssemblyLinearVelocity.Z)
         end
     end
 
-    local aimOn = Cfg.Aimbot.Aimbot or Cfg.Aimbot.LegitAim or Cfg.Aimbot.RageAim or Cfg.Aimbot.TargetLock or Cfg.Aimbot.SmoothAim
-    if aimOn and Camera then
-        local target = getTarget()
-        if target then
-            local alpha = Cfg.Aimbot.LegitAim and 0.10
-                or (Cfg.Aimbot.RageAim and 0.85)
-                or (Cfg.Aimbot.TargetLock and 0.65)
-                or Cfg.AimSmoothness
-            if Cfg.AimType == "Legit" then alpha = math.min(alpha, 0.12)
-            elseif Cfg.AimType == "Rage" then alpha = 0.90
-            elseif Cfg.AimType == "Lock" then alpha = 0.65 end
+    local aimCalissin = AimbotAktif or LegitAimAktif or RageAimAktif or HedefKilitleAktif or YumusakAimAktif
+    if aimCalissin and AktifKamera then
+        local hedef = HedefSec()
+        if hedef then
+            local hedefKonum = hedef.Position
+            if NisantahminiAktif and hedef:IsA("BasePart") then
+                hedefKonum = hedefKonum + (hedef.AssemblyLinearVelocity * 0.14)
+            end
 
-            local goal = CFrame.lookAt(Camera.CFrame.Position, target.Position)
-            Camera.CFrame = Camera.CFrame:Lerp(goal, math.clamp(alpha, 0.02, 1))
+            local yumusaklik = AimbotYumusakligi
+            if AimbotTuruSecili == "Legit Aim" or LegitAimAktif then
+                yumusaklik = math.min(yumusaklik, 0.10)
+            elseif AimbotTuruSecili == "Rage Aim" or RageAimAktif then
+                yumusaklik = 0.90
+            elseif AimbotTuruSecili == "Hedef Kilitle" or HedefKilitleAktif then
+                yumusaklik = 0.70
+            elseif AimbotTuruSecili == "Normal Aim" then
+                yumusaklik = 0.45
+            end
+
+            local istenenAci = CFrame.lookAt(AktifKamera.CFrame.Position, hedefKonum)
+            AktifKamera.CFrame = AktifKamera.CFrame:Lerp(istenenAci, math.clamp(yumusaklik, 0.02, 1))
         end
     end
 end)
