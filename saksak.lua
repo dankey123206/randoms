@@ -10,227 +10,130 @@ local LocalPlayer = Players.LocalPlayer
 local Camera = Workspace.CurrentCamera
 
 local State = {
-    MenuMode = "BUTTON",
-    TopNotchX = 0.5,
-    KeybindCounter = 0,
-    Sections = {
-        AimbotTargeting = {
-            Aimbot = false, SilentAim = false, LegitAim = false, RageAim = false,
-            TargetLock = false, AutoShoot = false, Triggerbot = false, SmoothAim = false,
-            FOV = false, AimPrediction = false, AimBone = "Head", NearestTarget = false,
-            TargetSwitch = false, VisibleCheck = true, TeamCheck = true, FriendCheck = true,
-            DeathCheck = true, KnockedCheck = true
-        },
-        EspVisuals = {
-            PlayerESP = false, BoxESP = false, SkeletonESP = false, NameESP = false,
-            HealthESP = false, DistanceESP = false, TracerESP = false, Box2D = false,
-            Box3D = false, HeadESP = false, Snaplines = false, Chams = false,
-            GlowESP = false, ItemESP = false, WeaponESP = false, EnemyOnly = true,
-            VisibleOnly = false
-        },
-        Movement = {
-            SpeedHack = false, FlyHack = false, InfiniteJump = false, NoClip = false,
-            Teleport = false, SuperJump = false, NoSlow = false, AirWalk = false,
-            GravityHack = false, Spinbot = false, BunnyHop = false, AntiFall = false
-        },
-        WeaponCombat = {
-            NoRecoil = false, NoSpread = false, RapidFire = false, FastReload = false,
-            InfiniteAmmo = false, NoReload = false, DamageModifier = false,
-            HitboxExpander = false, MeleeAura = false, AutoKill = false
-        },
-        ChecksFilters = {
-            TeamCheck = true, FriendCheck = true, EnemyCheck = true, AliveCheck = true,
-            DeadCheck = true, VisibilityCheck = true, WallCheck = true, DistanceCheck = false,
-            HealthCheck = false, NPCCheck = false, BotCheck = false, AFKCheck = false,
-            SafeZoneCheck = false, FOVCheck = true, VehicleCheck = false
-        },
-        MiscOther = {
-            AntiAim = false, FakeLag = false, Desync = false, HitSound = false,
-            KillSound = false, HitMarker = false, CrosshairChanger = false,
-            FOVChanger = false, FPSUnlocker = false, AutoRespawn = false,
-            SpectatorMode = false, ConfigSystem = false, PanicButton = false
-        },
-        PlayerCharacter = {
-            CharacterESP = false, HeadESP = false, BodyESP = false, HandESP = false,
-            LegESP = false, OutfitESP = false, AvatarESP = false, PlayerHighlight = false,
-            PlayerChams = false
-        },
-        WorldEnvironment = {
-            WorldESP = false, ObjectESP = false, DoorESP = false, LootESP = false,
-            WeaponFinder = false, ItemFinder = false, Radar = false, Minimap = false,
-            Fullbright = false, NoFog = false, NightVision = false
-        },
-        TargetSettings = {
-            TargetPart = "Head", TargetPriority = "Closest", TargetDistance = 250,
-            TargetTeam = "Enemies", TargetVisibility = true, TargetHealth = "Lowest",
-            TargetMode = "Standard", TargetFilter = "Standard", TargetIgnoreList = "",
-            TargetWhitelist = "", TargetBlacklist = ""
-        },
-        GuiMenu = {
-            MobileMenu = true, RayfieldTemplate = true, TopNotch = false,
-            ButtonMode = true, NotchPosition = 50
-        }
+    KeyCounter = 0,
+    Aimbot = {
+        Aimbot = false, SilentAim = false, LegitAim = false, RageAim = false,
+        TargetLock = false, AutoShoot = false, Triggerbot = false, SmoothAim = false,
+        FOV = false, AimPrediction = false, AimBone = "Head", NearestTarget = false,
+        TargetSwitch = false, VisibleCheck = true, TeamCheck = true, FriendCheck = true,
+        DeathCheck = true, KnockedCheck = true
+    },
+    ESP = {
+        PlayerESP = false, BoxESP = false, SkeletonESP = false, NameESP = false,
+        HealthESP = false, DistanceESP = false, TracerESP = false, Box2D = false,
+        Box3D = false, HeadESP = false, Snaplines = false, Chams = false,
+        GlowESP = false, ItemESP = false, WeaponESP = false, EnemyOnly = true,
+        VisibleOnly = false
+    },
+    Movement = {
+        SpeedHack = false, FlyHack = false, InfiniteJump = false, NoClip = false,
+        Teleport = false, SuperJump = false, NoSlow = false, AirWalk = false,
+        GravityHack = false, Spinbot = false, BunnyHop = false, AntiFall = false
+    },
+    Weapon = {
+        NoRecoil = false, NoSpread = false, RapidFire = false, FastReload = false,
+        InfiniteAmmo = false, NoReload = false, DamageModifier = false,
+        HitboxExpander = false, MeleeAura = false, AutoKill = false
+    },
+    Checks = {
+        TeamCheck = true, FriendCheck = true, EnemyCheck = true, AliveCheck = true,
+        DeadCheck = true, VisibilityCheck = true, WallCheck = true, DistanceCheck = false,
+        HealthCheck = false, NPCCheck = false, BotCheck = false, AFKCheck = false,
+        SafeZoneCheck = false, FOVCheck = true, VehicleCheck = false
+    },
+    Misc = {
+        AntiAim = false, FakeLag = false, Desync = false, HitSound = false,
+        KillSound = false, HitMarker = false, CrosshairChanger = false,
+        FOVChanger = false, FPSUnlocker = false, AutoRespawn = false,
+        SpectatorMode = false, ConfigSystem = false, PanicButton = false
+    },
+    Character = {
+        CharacterESP = false, HeadESP = false, BodyESP = false, HandESP = false,
+        LegESP = false, OutfitESP = false, AvatarESP = false, PlayerHighlight = false,
+        PlayerChams = false
+    },
+    World = {
+        WorldESP = false, ObjectESP = false, DoorESP = false, LootESP = false,
+        WeaponFinder = false, ItemFinder = false, Radar = false, Minimap = false,
+        Fullbright = false, NoFog = false, NightVision = false
+    },
+    TargetSet = {
+        TargetPart = "Head", TargetPriority = "Closest", TargetDistance = 250,
+        TargetTeam = "Enemies", TargetVisibility = true, TargetHealth = "Lowest",
+        TargetMode = "Standard", TargetFilter = "Standard", TargetIgnoreList = "",
+        TargetWhitelist = "", TargetBlacklist = ""
     }
 }
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "UniversalMobileKeybindOverlay"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+local KeyGui = Instance.new("ScreenGui")
+KeyGui.Name = "RayfieldCustomKeysGui"
+KeyGui.ResetOnSpawn = false
+KeyGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+KeyGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
-local TopNotchFrame = Instance.new("Frame")
-TopNotchFrame.Size = UDim2.new(0, 190, 0, 34)
-TopNotchFrame.Position = UDim2.new(State.TopNotchX, -95, 0, 6)
-TopNotchFrame.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
-TopNotchFrame.BorderSizePixel = 0
-TopNotchFrame.Visible = false
-TopNotchFrame.Parent = ScreenGui
-Instance.new("UICorner", TopNotchFrame).CornerRadius = UDim.new(0, 14)
+local SpawnedKeys = {}
 
-local notchStroke = Instance.new("UIStroke")
-notchStroke.Color = Color3.fromRGB(95, 165, 255)
-notchStroke.Thickness = 1.5
-notchStroke.Parent = TopNotchFrame
+local function createKey(id, label, onToggle)
+    if SpawnedKeys[id] then return SpawnedKeys[id].Btn end
+    State.KeyCounter += 1
+    local idx = State.KeyCounter
 
-local NotchLeftBtn = Instance.new("TextButton")
-NotchLeftBtn.Size = UDim2.new(0.16, 0, 1, 0)
-NotchLeftBtn.BackgroundTransparency = 1
-NotchLeftBtn.Text = "<"
-NotchLeftBtn.TextColor3 = Color3.fromRGB(160, 200, 255)
-NotchLeftBtn.TextSize = 13
-NotchLeftBtn.Font = Enum.Font.GothamBold
-NotchLeftBtn.Parent = TopNotchFrame
+    local btn = Instance.new("TextButton")
+    btn.Name = "Key_" .. id
+    btn.Size = UDim2.new(0, 88, 0, 38)
+    btn.Position = UDim2.new(0.14 + ((idx % 5) * 0.14), 0, 0.22 + (math.floor(idx / 5) * 0.08), 0)
+    btn.BackgroundColor3 = Color3.fromRGB(115, 118, 125)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Text = label
+    btn.TextSize = 10
+    btn.Font = Enum.Font.GothamBold
+    btn.Active = true
+    btn.Draggable = true
+    btn.Parent = KeyGui
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
 
-local NotchToggleBtn = Instance.new("TextButton")
-NotchToggleBtn.Size = UDim2.new(0.68, 0, 1, 0)
-NotchToggleBtn.Position = UDim2.new(0.16, 0, 0, 0)
-NotchToggleBtn.BackgroundTransparency = 1
-NotchToggleBtn.Text = "NOTCH MENU"
-NotchToggleBtn.TextColor3 = Color3.fromRGB(245, 245, 250)
-NotchToggleBtn.TextSize = 11
-NotchToggleBtn.Font = Enum.Font.GothamBold
-NotchToggleBtn.Parent = TopNotchFrame
-
-local NotchRightBtn = Instance.new("TextButton")
-NotchRightBtn.Size = UDim2.new(0.16, 0, 1, 0)
-NotchRightBtn.Position = UDim2.new(0.84, 0, 0, 0)
-NotchRightBtn.BackgroundTransparency = 1
-NotchRightBtn.Text = ">"
-NotchRightBtn.TextColor3 = Color3.fromRGB(160, 200, 255)
-NotchRightBtn.TextSize = 13
-NotchRightBtn.Font = Enum.Font.GothamBold
-NotchRightBtn.Parent = TopNotchFrame
-
-local MainFloatingBtn = Instance.new("TextButton")
-MainFloatingBtn.Size = UDim2.new(0, 62, 0, 62)
-MainFloatingBtn.Position = UDim2.new(0.05, 0, 0.35, 0)
-MainFloatingBtn.BackgroundColor3 = Color3.fromRGB(30, 32, 38)
-MainFloatingBtn.Text = "HUB"
-MainFloatingBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-MainFloatingBtn.TextSize = 13
-MainFloatingBtn.Font = Enum.Font.GothamBold
-MainFloatingBtn.Active = true
-MainFloatingBtn.Draggable = true
-MainFloatingBtn.Parent = ScreenGui
-Instance.new("UICorner", MainFloatingBtn).CornerRadius = UDim.new(1, 0)
-
-local mainBtnStroke = Instance.new("UIStroke")
-mainBtnStroke.Color = Color3.fromRGB(255, 215, 0)
-mainBtnStroke.Thickness = 2
-mainBtnStroke.Parent = MainFloatingBtn
-
-local CreatedKeyButtons = {}
-
-local function applyMenuMode()
-    if State.MenuMode == "TOP_NOTCH" then
-        TopNotchFrame.Visible = true
-        MainFloatingBtn.Visible = false
-        TopNotchFrame.Position = UDim2.new(State.TopNotchX, -95, 0, 6)
-    else
-        TopNotchFrame.Visible = false
-        MainFloatingBtn.Visible = true
-    end
-end
-
-NotchLeftBtn.MouseButton1Click:Connect(function()
-    State.TopNotchX = math.clamp(State.TopNotchX - 0.08, 0.12, 0.88)
-    State.Sections.GuiMenu.NotchPosition = math.floor(State.TopNotchX * 100)
-    applyMenuMode()
-end)
-
-NotchRightBtn.MouseButton1Click:Connect(function()
-    State.TopNotchX = math.clamp(State.TopNotchX + 0.08, 0.12, 0.88)
-    State.Sections.GuiMenu.NotchPosition = math.floor(State.TopNotchX * 100)
-    applyMenuMode()
-end)
-
-NotchToggleBtn.MouseButton1Click:Connect(function() Rayfield:Toggle() end)
-MainFloatingBtn.MouseButton1Click:Connect(function() Rayfield:Toggle() end)
-
-local function addKeybindButton(featureKey, displayLabel, onToggleCallback)
-    if CreatedKeyButtons[featureKey] then
-        return CreatedKeyButtons[featureKey].Button
-    end
-
-    State.KeybindCounter += 1
-    local idx = State.KeybindCounter
-
-    local keyBtn = Instance.new("TextButton")
-    keyBtn.Size = UDim2.new(0, 86, 0, 38)
-    keyBtn.Position = UDim2.new(0.15 + ((idx % 5) * 0.14), 0, 0.22 + (math.floor(idx / 5) * 0.08), 0)
-    keyBtn.BackgroundColor3 = Color3.fromRGB(115, 118, 125)
-    keyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    keyBtn.Text = displayLabel
-    keyBtn.TextSize = 10
-    keyBtn.Font = Enum.Font.GothamBold
-    keyBtn.Active = true
-    keyBtn.Draggable = true
-    keyBtn.Parent = ScreenGui
-    Instance.new("UICorner", keyBtn).CornerRadius = UDim.new(0, 8)
-
-    local cornerBadge = Instance.new("Frame")
-    cornerBadge.Size = UDim2.new(0, 12, 0, 12)
-    cornerBadge.Position = UDim2.new(1, -12, 1, -12)
-    cornerBadge.BackgroundColor3 = Color3.fromRGB(140, 140, 145)
-    cornerBadge.BorderSizePixel = 0
-    cornerBadge.Parent = keyBtn
-    Instance.new("UICorner", cornerBadge).CornerRadius = UDim.new(0, 4)
+    local lockBox = Instance.new("Frame")
+    lockBox.Size = UDim2.new(0, 12, 0, 12)
+    lockBox.Position = UDim2.new(1, -12, 1, -12)
+    lockBox.BackgroundColor3 = Color3.fromRGB(145, 145, 150)
+    lockBox.BorderSizePixel = 0
+    lockBox.Parent = btn
+    Instance.new("UICorner", lockBox).CornerRadius = UDim.new(0, 4)
 
     local stroke = Instance.new("UIStroke")
     stroke.Color = Color3.fromRGB(165, 168, 175)
     stroke.Thickness = 1.5
-    stroke.Parent = keyBtn
+    stroke.Parent = btn
 
-    local entry = { Button = keyBtn, Locked = false, Active = false }
-    CreatedKeyButtons[featureKey] = entry
+    local rec = { Btn = btn, Locked = false, Active = false }
+    SpawnedKeys[id] = rec
 
-    keyBtn.MouseButton1Click:Connect(function()
-        entry.Active = not entry.Active
-        if not entry.Locked then
-            keyBtn.BackgroundColor3 = entry.Active and Color3.fromRGB(85, 95, 105) or Color3.fromRGB(115, 118, 125)
+    btn.MouseButton1Click:Connect(function()
+        rec.Active = not rec.Active
+        if not rec.Locked then
+            btn.BackgroundColor3 = rec.Active and Color3.fromRGB(80, 95, 110) or Color3.fromRGB(115, 118, 125)
         else
-            cornerBadge.BackgroundColor3 = entry.Active and Color3.fromRGB(255, 225, 40) or Color3.fromRGB(190, 155, 15)
+            lockBox.BackgroundColor3 = rec.Active and Color3.fromRGB(255, 225, 45) or Color3.fromRGB(205, 165, 15)
         end
-        if onToggleCallback then onToggleCallback(entry.Active) end
+        if onToggle then onToggle(rec.Active) end
     end)
 
     local holdToken = 0
-    keyBtn.InputBegan:Connect(function(input)
+    btn.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
             holdToken += 1
-            local t = holdToken
+            local tok = holdToken
             task.delay(3, function()
-                if t == holdToken then
-                    entry.Locked = not entry.Locked
-                    keyBtn.Active = not entry.Locked
-                    keyBtn.Draggable = not entry.Locked
-                    if entry.Locked then
-                        cornerBadge.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+                if tok == holdToken then
+                    rec.Locked = not rec.Locked
+                    btn.Active = not rec.Locked
+                    btn.Draggable = not rec.Locked
+                    if rec.Locked then
+                        lockBox.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
                         stroke.Color = Color3.fromRGB(255, 215, 0)
                         stroke.Thickness = 2.5
                     else
-                        cornerBadge.BackgroundColor3 = Color3.fromRGB(140, 140, 145)
+                        lockBox.BackgroundColor3 = Color3.fromRGB(145, 145, 150)
                         stroke.Color = Color3.fromRGB(165, 168, 175)
                         stroke.Thickness = 1.5
                     end
@@ -239,306 +142,275 @@ local function addKeybindButton(featureKey, displayLabel, onToggleCallback)
         end
     end)
 
-    keyBtn.InputEnded:Connect(function(input)
+    btn.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
             holdToken += 1
         end
     end)
 
-    return keyBtn
+    return btn
 end
 
-local function removeKeybindButton(featureKey)
-    local entry = CreatedKeyButtons[featureKey]
-    if entry and entry.Button then
-        entry.Button:Destroy()
-        CreatedKeyButtons[featureKey] = nil
+local function removeKey(id)
+    local rec = SpawnedKeys[id]
+    if rec and rec.Btn then
+        rec.Btn:Destroy()
+        SpawnedKeys[id] = nil
     end
 end
 
-local function addToggleWithKeyControls(tab, label, featureKey, tableRef, fieldName, onChanged)
+local function addOpt(tab, title, id, tbl, field, cb)
     tab:CreateToggle({
-        Name = label,
-        CurrentValue = tableRef[fieldName] == true,
-        Callback = function(val)
-            tableRef[fieldName] = val
-            if CreatedKeyButtons[featureKey] then CreatedKeyButtons[featureKey].Active = val end
-            if onChanged then onChanged(val) end
+        Name = title,
+        CurrentValue = tbl[field] == true,
+        Callback = function(v)
+            tbl[field] = v
+            if SpawnedKeys[id] then SpawnedKeys[id].Active = v end
+            if cb then cb(v) end
         end
     })
     tab:CreateButton({
-        Name = "TUS +  (" .. label .. ")",
+        Name = "TUS +  (" .. title .. ")",
         Callback = function()
-            addKeybindButton(featureKey, label, function(newState)
-                tableRef[fieldName] = newState
-                if onChanged then onChanged(newState) end
+            createKey(id, title, function(st)
+                tbl[field] = st
+                if cb then cb(st) end
             end)
         end
     })
     tab:CreateButton({
-        Name = "TUS -  (" .. label .. ")",
-        Callback = function() removeKeybindButton(featureKey) end
+        Name = "TUS -  (" .. title .. ")",
+        Callback = function() removeKey(id) end
     })
 end
 
 local Window = Rayfield:CreateWindow({
-    Name = "10-Section Mobile Hub",
-    LoadingTitle = "10 Bolumlu Mobil Hub",
-    LoadingSubtitle = "Top Notch • Button • TUS + / TUS -",
+    Name = "Rayfield Hub",
+    LoadingTitle = "Yukleniyor...",
+    LoadingSubtitle = "Tum Ozellikler + TUS + / TUS -",
     ConfigurationSaving = { Enabled = false }
 })
-local Sec1 = Window:CreateTab("1.Aimbot", 4483362458)
-local Sec2 = Window:CreateTab("2.ESP", 4483362458)
-local Sec3 = Window:CreateTab("3.Movement", 4483362458)
-local Sec4 = Window:CreateTab("4.Weapon", 4483362458)
-local Sec5 = Window:CreateTab("5.Checks", 4483362458)
 
--- BOLUM 1: AIMBOT / TARGETING
-addToggleWithKeyControls(Sec1, "Aimbot", "s1_aimbot", State.Sections.AimbotTargeting, "Aimbot")
-addToggleWithKeyControls(Sec1, "Silent Aim", "s1_silent", State.Sections.AimbotTargeting, "SilentAim")
-addToggleWithKeyControls(Sec1, "Legit Aim", "s1_legit", State.Sections.AimbotTargeting, "LegitAim")
-addToggleWithKeyControls(Sec1, "Rage Aim", "s1_rage", State.Sections.AimbotTargeting, "RageAim")
-addToggleWithKeyControls(Sec1, "Target Lock", "s1_lock", State.Sections.AimbotTargeting, "TargetLock")
-addToggleWithKeyControls(Sec1, "Auto Shoot", "s1_autoshoot", State.Sections.AimbotTargeting, "AutoShoot")
-addToggleWithKeyControls(Sec1, "Triggerbot", "s1_trigger", State.Sections.AimbotTargeting, "Triggerbot")
-addToggleWithKeyControls(Sec1, "Smooth Aim", "s1_smooth", State.Sections.AimbotTargeting, "SmoothAim")
-addToggleWithKeyControls(Sec1, "FOV", "s1_fov", State.Sections.AimbotTargeting, "FOV")
-addToggleWithKeyControls(Sec1, "Aim Prediction", "s1_pred", State.Sections.AimbotTargeting, "AimPrediction")
-addToggleWithKeyControls(Sec1, "Nearest Target", "s1_nearest", State.Sections.AimbotTargeting, "NearestTarget")
-addToggleWithKeyControls(Sec1, "Target Switch", "s1_switch", State.Sections.AimbotTargeting, "TargetSwitch")
-addToggleWithKeyControls(Sec1, "Visible Check", "s1_vis", State.Sections.AimbotTargeting, "VisibleCheck")
-addToggleWithKeyControls(Sec1, "Team Check", "s1_team", State.Sections.AimbotTargeting, "TeamCheck")
-addToggleWithKeyControls(Sec1, "Friend Check", "s1_friend", State.Sections.AimbotTargeting, "FriendCheck")
-addToggleWithKeyControls(Sec1, "Death Check", "s1_death", State.Sections.AimbotTargeting, "DeathCheck")
-addToggleWithKeyControls(Sec1, "Knocked Check", "s1_knock", State.Sections.AimbotTargeting, "KnockedCheck")
-Sec1:CreateDropdown({
+-- 1. AIMBOT / TARGETING
+local T1 = Window:CreateTab("Aimbot", 4483362458)
+addOpt(T1, "Aimbot", "a1", State.Aimbot, "Aimbot")
+addOpt(T1, "Silent Aim", "a2", State.Aimbot, "SilentAim")
+addOpt(T1, "Legit Aim", "a3", State.Aimbot, "LegitAim")
+addOpt(T1, "Rage Aim", "a4", State.Aimbot, "RageAim")
+addOpt(T1, "Target Lock", "a5", State.Aimbot, "TargetLock")
+addOpt(T1, "Auto Shoot", "a6", State.Aimbot, "AutoShoot")
+addOpt(T1, "Triggerbot", "a7", State.Aimbot, "Triggerbot")
+addOpt(T1, "Smooth Aim", "a8", State.Aimbot, "SmoothAim")
+addOpt(T1, "FOV", "a9", State.Aimbot, "FOV")
+addOpt(T1, "Aim Prediction", "a10", State.Aimbot, "AimPrediction")
+addOpt(T1, "Nearest Target", "a11", State.Aimbot, "NearestTarget")
+addOpt(T1, "Target Switch", "a12", State.Aimbot, "TargetSwitch")
+addOpt(T1, "Visible Check", "a13", State.Aimbot, "VisibleCheck")
+addOpt(T1, "Team Check", "a14", State.Aimbot, "TeamCheck")
+addOpt(T1, "Friend Check", "a15", State.Aimbot, "FriendCheck")
+addOpt(T1, "Death Check", "a16", State.Aimbot, "DeathCheck")
+addOpt(T1, "Knocked Check", "a17", State.Aimbot, "KnockedCheck")
+T1:CreateDropdown({
     Name = "Aim Bone",
     Options = {"Head", "UpperTorso", "HumanoidRootPart"},
     CurrentOption = {"Head"},
-    Callback = function(o) State.Sections.AimbotTargeting.AimBone = o[1] end
+    Callback = function(o) State.Aimbot.AimBone = o[1] end
 })
 
--- BOLUM 2: ESP / VISUALS
-addToggleWithKeyControls(Sec2, "Player ESP", "s2_pesp", State.Sections.EspVisuals, "PlayerESP")
-addToggleWithKeyControls(Sec2, "Box ESP", "s2_box", State.Sections.EspVisuals, "BoxESP")
-addToggleWithKeyControls(Sec2, "Skeleton ESP", "s2_skel", State.Sections.EspVisuals, "SkeletonESP")
-addToggleWithKeyControls(Sec2, "Name ESP", "s2_name", State.Sections.EspVisuals, "NameESP")
-addToggleWithKeyControls(Sec2, "Health ESP", "s2_hp", State.Sections.EspVisuals, "HealthESP")
-addToggleWithKeyControls(Sec2, "Distance ESP", "s2_dist", State.Sections.EspVisuals, "DistanceESP")
-addToggleWithKeyControls(Sec2, "Tracer ESP", "s2_trace", State.Sections.EspVisuals, "TracerESP")
-addToggleWithKeyControls(Sec2, "2D Box", "s2_2d", State.Sections.EspVisuals, "Box2D")
-addToggleWithKeyControls(Sec2, "3D Box", "s2_3d", State.Sections.EspVisuals, "Box3D")
-addToggleWithKeyControls(Sec2, "Head ESP", "s2_head", State.Sections.EspVisuals, "HeadESP")
-addToggleWithKeyControls(Sec2, "Snaplines", "s2_snap", State.Sections.EspVisuals, "Snaplines")
-addToggleWithKeyControls(Sec2, "Chams", "s2_chams", State.Sections.EspVisuals, "Chams")
-addToggleWithKeyControls(Sec2, "Glow ESP", "s2_glow", State.Sections.EspVisuals, "GlowESP")
-addToggleWithKeyControls(Sec2, "Item ESP", "s2_item", State.Sections.EspVisuals, "ItemESP")
-addToggleWithKeyControls(Sec2, "Weapon ESP", "s2_weap", State.Sections.EspVisuals, "WeaponESP")
-addToggleWithKeyControls(Sec2, "Enemy Only", "s2_enemy", State.Sections.EspVisuals, "EnemyOnly")
-addToggleWithKeyControls(Sec2, "Visible Only", "s2_visonly", State.Sections.EspVisuals, "VisibleOnly")
+-- 2. ESP / VISUALS
+local T2 = Window:CreateTab("ESP", 4483362458)
+addOpt(T2, "Player ESP", "e1", State.ESP, "PlayerESP")
+addOpt(T2, "Box ESP", "e2", State.ESP, "BoxESP")
+addOpt(T2, "Skeleton ESP", "e3", State.ESP, "SkeletonESP")
+addOpt(T2, "Name ESP", "e4", State.ESP, "NameESP")
+addOpt(T2, "Health ESP", "e5", State.ESP, "HealthESP")
+addOpt(T2, "Distance ESP", "e6", State.ESP, "DistanceESP")
+addOpt(T2, "Tracer ESP", "e7", State.ESP, "TracerESP")
+addOpt(T2, "2D Box", "e8", State.ESP, "Box2D")
+addOpt(T2, "3D Box", "e9", State.ESP, "Box3D")
+addOpt(T2, "Head ESP", "e10", State.ESP, "HeadESP")
+addOpt(T2, "Snaplines", "e11", State.ESP, "Snaplines")
+addOpt(T2, "Chams", "e12", State.ESP, "Chams")
+addOpt(T2, "Glow ESP", "e13", State.ESP, "GlowESP")
+addOpt(T2, "Item ESP", "e14", State.ESP, "ItemESP")
+addOpt(T2, "Weapon ESP", "e15", State.ESP, "WeaponESP")
+addOpt(T2, "Enemy Only", "e16", State.ESP, "EnemyOnly")
+addOpt(T2, "Visible Only", "e17", State.ESP, "VisibleOnly")
 
--- BOLUM 3: MOVEMENT
-addToggleWithKeyControls(Sec3, "Speed Hack", "s3_speed", State.Sections.Movement, "SpeedHack")
-addToggleWithKeyControls(Sec3, "Fly Hack", "s3_fly", State.Sections.Movement, "FlyHack")
-addToggleWithKeyControls(Sec3, "Infinite Jump", "s3_infjump", State.Sections.Movement, "InfiniteJump")
-addToggleWithKeyControls(Sec3, "No Clip", "s3_noclip", State.Sections.Movement, "NoClip")
-addToggleWithKeyControls(Sec3, "Teleport", "s3_tp", State.Sections.Movement, "Teleport")
-addToggleWithKeyControls(Sec3, "Super Jump", "s3_superjump", State.Sections.Movement, "SuperJump")
-addToggleWithKeyControls(Sec3, "No Slow", "s3_noslow", State.Sections.Movement, "NoSlow")
-addToggleWithKeyControls(Sec3, "Air Walk", "s3_airwalk", State.Sections.Movement, "AirWalk")
-addToggleWithKeyControls(Sec3, "Gravity Hack", "s3_grav", State.Sections.Movement, "GravityHack")
-addToggleWithKeyControls(Sec3, "Spinbot", "s3_spin", State.Sections.Movement, "Spinbot")
-addToggleWithKeyControls(Sec3, "Bunny Hop", "s3_bhop", State.Sections.Movement, "BunnyHop")
-addToggleWithKeyControls(Sec3, "Anti Fall", "s3_antifall", State.Sections.Movement, "AntiFall")
+-- 3. MOVEMENT
+local T3 = Window:CreateTab("Movement", 4483362458)
+addOpt(T3, "Speed Hack", "m1", State.Movement, "SpeedHack")
+addOpt(T3, "Fly Hack", "m2", State.Movement, "FlyHack")
+addOpt(T3, "Infinite Jump", "m3", State.Movement, "InfiniteJump")
+addOpt(T3, "No Clip", "m4", State.Movement, "NoClip")
+addOpt(T3, "Teleport", "m5", State.Movement, "Teleport")
+addOpt(T3, "Super Jump", "m6", State.Movement, "SuperJump")
+addOpt(T3, "No Slow", "m7", State.Movement, "NoSlow")
+addOpt(T3, "Air Walk", "m8", State.Movement, "AirWalk")
+addOpt(T3, "Gravity Hack", "m9", State.Movement, "GravityHack")
+addOpt(T3, "Spinbot", "m10", State.Movement, "Spinbot")
+addOpt(T3, "Bunny Hop", "m11", State.Movement, "BunnyHop")
+addOpt(T3, "Anti Fall", "m12", State.Movement, "AntiFall")
+-- 4. WEAPON / COMBAT
+local T4 = Window:CreateTab("Weapon", 4483362458)
+addOpt(T4, "No Recoil", "w1", State.Weapon, "NoRecoil")
+addOpt(T4, "No Spread", "w2", State.Weapon, "NoSpread")
+addOpt(T4, "Rapid Fire", "w3", State.Weapon, "RapidFire")
+addOpt(T4, "Fast Reload", "w4", State.Weapon, "FastReload")
+addOpt(T4, "Infinite Ammo", "w5", State.Weapon, "InfiniteAmmo")
+addOpt(T4, "No Reload", "w6", State.Weapon, "NoReload")
+addOpt(T4, "Damage Modifier", "w7", State.Weapon, "DamageModifier")
+addOpt(T4, "Hitbox Expander", "w8", State.Weapon, "HitboxExpander")
+addOpt(T4, "Melee Aura", "w9", State.Weapon, "MeleeAura")
+addOpt(T4, "Auto Kill", "w10", State.Weapon, "AutoKill")
 
--- BOLUM 4: WEAPON / COMBAT
-addToggleWithKeyControls(Sec4, "No Recoil", "s4_recoil", State.Sections.WeaponCombat, "NoRecoil")
-addToggleWithKeyControls(Sec4, "No Spread", "s4_spread", State.Sections.WeaponCombat, "NoSpread")
-addToggleWithKeyControls(Sec4, "Rapid Fire", "s4_rapid", State.Sections.WeaponCombat, "RapidFire")
-addToggleWithKeyControls(Sec4, "Fast Reload", "s4_fastrel", State.Sections.WeaponCombat, "FastReload")
-addToggleWithKeyControls(Sec4, "Infinite Ammo", "s4_infammo", State.Sections.WeaponCombat, "InfiniteAmmo")
-addToggleWithKeyControls(Sec4, "No Reload", "s4_norel", State.Sections.WeaponCombat, "NoReload")
-addToggleWithKeyControls(Sec4, "Damage Modifier", "s4_dmg", State.Sections.WeaponCombat, "DamageModifier")
-addToggleWithKeyControls(Sec4, "Hitbox Expander", "s4_hitbox", State.Sections.WeaponCombat, "HitboxExpander")
-addToggleWithKeyControls(Sec4, "Melee Aura", "s4_melee", State.Sections.WeaponCombat, "MeleeAura")
-addToggleWithKeyControls(Sec4, "Auto Kill", "s4_autokill", State.Sections.WeaponCombat, "AutoKill")
+-- 5. CHECKS / FILTERS
+local T5 = Window:CreateTab("Checks", 4483362458)
+addOpt(T5, "Team Check", "c1", State.Checks, "TeamCheck")
+addOpt(T5, "Friend Check", "c2", State.Checks, "FriendCheck")
+addOpt(T5, "Enemy Check", "c3", State.Checks, "EnemyCheck")
+addOpt(T5, "Alive Check", "c4", State.Checks, "AliveCheck")
+addOpt(T5, "Dead Check", "c5", State.Checks, "DeadCheck")
+addOpt(T5, "Visibility Check", "c6", State.Checks, "VisibilityCheck")
+addOpt(T5, "Wall Check", "c7", State.Checks, "WallCheck")
+addOpt(T5, "Distance Check", "c8", State.Checks, "DistanceCheck")
+addOpt(T5, "Health Check", "c9", State.Checks, "HealthCheck")
+addOpt(T5, "NPC Check", "c10", State.Checks, "NPCCheck")
+addOpt(T5, "Bot Check", "c11", State.Checks, "BotCheck")
+addOpt(T5, "AFK Check", "c12", State.Checks, "AFKCheck")
+addOpt(T5, "Safe Zone Check", "c13", State.Checks, "SafeZoneCheck")
+addOpt(T5, "FOV Check", "c14", State.Checks, "FOVCheck")
+addOpt(T5, "Vehicle Check", "c15", State.Checks, "VehicleCheck")
 
--- BOLUM 5: CHECKS / FILTERS
-addToggleWithKeyControls(Sec5, "Team Check", "s5_team", State.Sections.ChecksFilters, "TeamCheck")
-addToggleWithKeyControls(Sec5, "Friend Check", "s5_friend", State.Sections.ChecksFilters, "FriendCheck")
-addToggleWithKeyControls(Sec5, "Enemy Check", "s5_enemy", State.Sections.ChecksFilters, "EnemyCheck")
-addToggleWithKeyControls(Sec5, "Alive Check", "s5_alive", State.Sections.ChecksFilters, "AliveCheck")
-addToggleWithKeyControls(Sec5, "Dead Check", "s5_dead", State.Sections.ChecksFilters, "DeadCheck")
-addToggleWithKeyControls(Sec5, "Visibility Check", "s5_vis", State.Sections.ChecksFilters, "VisibilityCheck")
-addToggleWithKeyControls(Sec5, "Wall Check", "s5_wall", State.Sections.ChecksFilters, "WallCheck")
-addToggleWithKeyControls(Sec5, "Distance Check", "s5_dist", State.Sections.ChecksFilters, "DistanceCheck")
-addToggleWithKeyControls(Sec5, "Health Check", "s5_hp", State.Sections.ChecksFilters, "HealthCheck")
-addToggleWithKeyControls(Sec5, "NPC Check", "s5_npc", State.Sections.ChecksFilters, "NPCCheck")
-addToggleWithKeyControls(Sec5, "Bot Check", "s5_bot", State.Sections.ChecksFilters, "BotCheck")
-addToggleWithKeyControls(Sec5, "AFK Check", "s5_afk", State.Sections.ChecksFilters, "AFKCheck")
-addToggleWithKeyControls(Sec5, "Safe Zone Check", "s5_safe", State.Sections.ChecksFilters, "SafeZoneCheck")
-addToggleWithKeyControls(Sec5, "FOV Check", "s5_fov", State.Sections.ChecksFilters, "FOVCheck")
-addToggleWithKeyControls(Sec5, "Vehicle Check", "s5_veh", State.Sections.ChecksFilters, "VehicleCheck")
-local Sec6 = Window:CreateTab("6.Misc", 4483362458)
-local Sec7 = Window:CreateTab("7.Character", 4483362458)
-local Sec8 = Window:CreateTab("8.World", 4483362458)
-local Sec9 = Window:CreateTab("9.TargetSet", 4483362458)
-local Sec10 = Window:CreateTab("10.GUI/Menu", 4483362458)
-
--- BOLUM 6: MISC / OTHER
-addToggleWithKeyControls(Sec6, "Anti-Aim", "s6_antiaim", State.Sections.MiscOther, "AntiAim")
-addToggleWithKeyControls(Sec6, "Fake Lag", "s6_fakelag", State.Sections.MiscOther, "FakeLag")
-addToggleWithKeyControls(Sec6, "Desync", "s6_desync", State.Sections.MiscOther, "Desync")
-addToggleWithKeyControls(Sec6, "Hit Sound", "s6_hitsound", State.Sections.MiscOther, "HitSound")
-addToggleWithKeyControls(Sec6, "Kill Sound", "s6_killsound", State.Sections.MiscOther, "KillSound")
-addToggleWithKeyControls(Sec6, "Hit Marker", "s6_hitmark", State.Sections.MiscOther, "HitMarker")
-addToggleWithKeyControls(Sec6, "Crosshair Changer", "s6_crosshair", State.Sections.MiscOther, "CrosshairChanger")
-addToggleWithKeyControls(Sec6, "FOV Changer", "s6_fovchg", State.Sections.MiscOther, "FOVChanger")
-addToggleWithKeyControls(Sec6, "FPS Unlocker", "s6_fps", State.Sections.MiscOther, "FPSUnlocker")
-addToggleWithKeyControls(Sec6, "Auto Respawn", "s6_respawn", State.Sections.MiscOther, "AutoRespawn")
-addToggleWithKeyControls(Sec6, "Spectator Mode", "s6_spec", State.Sections.MiscOther, "SpectatorMode")
-addToggleWithKeyControls(Sec6, "Config System", "s6_cfg", State.Sections.MiscOther, "ConfigSystem")
-addToggleWithKeyControls(Sec6, "Panic Button", "s6_panic", State.Sections.MiscOther, "PanicButton", function(active)
-    if active then
-        for _, sec in pairs(State.Sections) do
-            for k, v in pairs(sec) do
-                if type(v) == "boolean" then sec[k] = false end
+-- 6. MISC / OTHER
+local T6 = Window:CreateTab("Misc", 4483362458)
+addOpt(T6, "Anti-Aim", "x1", State.Misc, "AntiAim")
+addOpt(T6, "Fake Lag", "x2", State.Misc, "FakeLag")
+addOpt(T6, "Desync", "x3", State.Misc, "Desync")
+addOpt(T6, "Hit Sound", "x4", State.Misc, "HitSound")
+addOpt(T6, "Kill Sound", "x5", State.Misc, "KillSound")
+addOpt(T6, "Hit Marker", "x6", State.Misc, "HitMarker")
+addOpt(T6, "Crosshair Changer", "x7", State.Misc, "CrosshairChanger")
+addOpt(T6, "FOV Changer", "x8", State.Misc, "FOVChanger")
+addOpt(T6, "FPS Unlocker", "x9", State.Misc, "FPSUnlocker")
+addOpt(T6, "Auto Respawn", "x10", State.Misc, "AutoRespawn")
+addOpt(T6, "Spectator Mode", "x11", State.Misc, "SpectatorMode")
+addOpt(T6, "Config System", "x12", State.Misc, "ConfigSystem")
+addOpt(T6, "Panic Button", "x13", State.Misc, "PanicButton", function(on)
+    if on then
+        for _, grp in pairs(State) do
+            if type(grp) == "table" then
+                for k, v in pairs(grp) do
+                    if type(v) == "boolean" then grp[k] = false end
+                end
             end
         end
     end
 end)
 
--- BOLUM 7: PLAYER / CHARACTER
-addToggleWithKeyControls(Sec7, "Character ESP", "s7_charesp", State.Sections.PlayerCharacter, "CharacterESP")
-addToggleWithKeyControls(Sec7, "Head ESP", "s7_headesp", State.Sections.PlayerCharacter, "HeadESP")
-addToggleWithKeyControls(Sec7, "Body ESP", "s7_bodyesp", State.Sections.PlayerCharacter, "BodyESP")
-addToggleWithKeyControls(Sec7, "Hand ESP", "s7_handesp", State.Sections.PlayerCharacter, "HandESP")
-addToggleWithKeyControls(Sec7, "Leg ESP", "s7_legesp", State.Sections.PlayerCharacter, "LegESP")
-addToggleWithKeyControls(Sec7, "Outfit ESP", "s7_outfit", State.Sections.PlayerCharacter, "OutfitESP")
-addToggleWithKeyControls(Sec7, "Avatar ESP", "s7_avatar", State.Sections.PlayerCharacter, "AvatarESP")
-addToggleWithKeyControls(Sec7, "Player Highlight", "s7_hl", State.Sections.PlayerCharacter, "PlayerHighlight")
-addToggleWithKeyControls(Sec7, "Player Chams", "s7_pchams", State.Sections.PlayerCharacter, "PlayerChams")
+-- 7. PLAYER / CHARACTER
+local T7 = Window:CreateTab("Character", 4483362458)
+addOpt(T7, "Character ESP", "p1", State.Character, "CharacterESP")
+addOpt(T7, "Head ESP", "p2", State.Character, "HeadESP")
+addOpt(T7, "Body ESP", "p3", State.Character, "BodyESP")
+addOpt(T7, "Hand ESP", "p4", State.Character, "HandESP")
+addOpt(T7, "Leg ESP", "p5", State.Character, "LegESP")
+addOpt(T7, "Outfit ESP", "p6", State.Character, "OutfitESP")
+addOpt(T7, "Avatar ESP", "p7", State.Character, "AvatarESP")
+addOpt(T7, "Player Highlight", "p8", State.Character, "PlayerHighlight")
+addOpt(T7, "Player Chams", "p9", State.Character, "PlayerChams")
 
--- BOLUM 8: WORLD / ENVIRONMENT
-addToggleWithKeyControls(Sec8, "World ESP", "s8_wesp", State.Sections.WorldEnvironment, "WorldESP")
-addToggleWithKeyControls(Sec8, "Object ESP", "s8_oesp", State.Sections.WorldEnvironment, "ObjectESP")
-addToggleWithKeyControls(Sec8, "Door ESP", "s8_door", State.Sections.WorldEnvironment, "DoorESP")
-addToggleWithKeyControls(Sec8, "Loot ESP", "s8_loot", State.Sections.WorldEnvironment, "LootESP")
-addToggleWithKeyControls(Sec8, "Weapon Finder", "s8_wfind", State.Sections.WorldEnvironment, "WeaponFinder")
-addToggleWithKeyControls(Sec8, "Item Finder", "s8_ifind", State.Sections.WorldEnvironment, "ItemFinder")
-addToggleWithKeyControls(Sec8, "Radar", "s8_radar", State.Sections.WorldEnvironment, "Radar")
-addToggleWithKeyControls(Sec8, "Minimap", "s8_minimap", State.Sections.WorldEnvironment, "Minimap")
-addToggleWithKeyControls(Sec8, "Fullbright", "s8_fullbright", State.Sections.WorldEnvironment, "Fullbright", function(v)
-    if v then
+-- 8. WORLD / ENVIRONMENT
+local T8 = Window:CreateTab("World", 4483362458)
+addOpt(T8, "World ESP", "d1", State.World, "WorldESP")
+addOpt(T8, "Object ESP", "d2", State.World, "ObjectESP")
+addOpt(T8, "Door ESP", "d3", State.World, "DoorESP")
+addOpt(T8, "Loot ESP", "d4", State.World, "LootESP")
+addOpt(T8, "Weapon Finder", "d5", State.World, "WeaponFinder")
+addOpt(T8, "Item Finder", "d6", State.World, "ItemFinder")
+addOpt(T8, "Radar", "d7", State.World, "Radar")
+addOpt(T8, "Minimap", "d8", State.World, "Minimap")
+addOpt(T8, "Fullbright", "d9", State.World, "Fullbright", function(on)
+    if on then
         Lighting.Brightness = 2
         Lighting.ClockTime = 14
         Lighting.GlobalShadows = false
     end
 end)
-addToggleWithKeyControls(Sec8, "No Fog", "s8_nofog", State.Sections.WorldEnvironment, "NoFog", function(v)
-    if v then Lighting.FogEnd = 1e6 end
+addOpt(T8, "No Fog", "d10", State.World, "NoFog", function(on)
+    if on then Lighting.FogEnd = 1e6 end
 end)
-addToggleWithKeyControls(Sec8, "Night Vision", "s8_nv", State.Sections.WorldEnvironment, "NightVision", function(v)
-    Lighting.Ambient = v and Color3.fromRGB(70, 220, 120) or Color3.fromRGB(0, 0, 0)
+addOpt(T8, "Night Vision", "d11", State.World, "NightVision", function(on)
+    Lighting.Ambient = on and Color3.fromRGB(70, 220, 120) or Color3.fromRGB(0, 0, 0)
 end)
 
--- BOLUM 9: TARGET SETTINGS
-Sec9:CreateDropdown({
+-- 9. TARGET SETTINGS
+local T9 = Window:CreateTab("TargetSet", 4483362458)
+T9:CreateDropdown({
     Name = "Target Part",
     Options = {"Head", "UpperTorso", "HumanoidRootPart"},
     CurrentOption = {"Head"},
-    Callback = function(o) State.Sections.TargetSettings.TargetPart = o[1] end
+    Callback = function(o) State.TargetSet.TargetPart = o[1] end
 })
-Sec9:CreateDropdown({
+T9:CreateDropdown({
     Name = "Target Priority",
     Options = {"Closest", "LowestHealth", "FOV"},
     CurrentOption = {"Closest"},
-    Callback = function(o) State.Sections.TargetSettings.TargetPriority = o[1] end
+    Callback = function(o) State.TargetSet.TargetPriority = o[1] end
 })
-Sec9:CreateSlider({
+T9:CreateSlider({
     Name = "Target Distance",
     Range = {20, 1000},
     Increment = 10,
     CurrentValue = 250,
-    Callback = function(v) State.Sections.TargetSettings.TargetDistance = v end
+    Callback = function(v) State.TargetSet.TargetDistance = v end
 })
-Sec9:CreateDropdown({
+T9:CreateDropdown({
     Name = "Target Team",
     Options = {"Enemies", "All", "NonTeam"},
     CurrentOption = {"Enemies"},
-    Callback = function(o) State.Sections.TargetSettings.TargetTeam = o[1] end
+    Callback = function(o) State.TargetSet.TargetTeam = o[1] end
 })
-addToggleWithKeyControls(Sec9, "Target Visibility", "s9_vis", State.Sections.TargetSettings, "TargetVisibility")
-Sec9:CreateDropdown({
+addOpt(T9, "Target Visibility", "t1", State.TargetSet, "TargetVisibility")
+T9:CreateDropdown({
     Name = "Target Health",
     Options = {"Lowest", "Highest", "Any"},
     CurrentOption = {"Lowest"},
-    Callback = function(o) State.Sections.TargetSettings.TargetHealth = o[1] end
+    Callback = function(o) State.TargetSet.TargetHealth = o[1] end
 })
-Sec9:CreateDropdown({
+T9:CreateDropdown({
     Name = "Target Mode",
     Options = {"Standard", "Aggressive", "Legit"},
     CurrentOption = {"Standard"},
-    Callback = function(o) State.Sections.TargetSettings.TargetMode = o[1] end
+    Callback = function(o) State.TargetSet.TargetMode = o[1] end
 })
-Sec9:CreateDropdown({
+T9:CreateDropdown({
     Name = "Target Filter",
     Options = {"Standard", "WhitelistOnly", "BlacklistSkip"},
     CurrentOption = {"Standard"},
-    Callback = function(o) State.Sections.TargetSettings.TargetFilter = o[1] end
+    Callback = function(o) State.TargetSet.TargetFilter = o[1] end
 })
-Sec9:CreateInput({
+T9:CreateInput({
     Name = "Target Ignore List",
     PlaceholderText = "Isim1, Isim2",
     RemoveTextAfterFocusLost = false,
-    Callback = function(t) State.Sections.TargetSettings.TargetIgnoreList = t end
+    Callback = function(t) State.TargetSet.TargetIgnoreList = t end
 })
-Sec9:CreateInput({
+T9:CreateInput({
     Name = "Target Whitelist",
     PlaceholderText = "Isim1, Isim2",
     RemoveTextAfterFocusLost = false,
-    Callback = function(t) State.Sections.TargetSettings.TargetWhitelist = t end
+    Callback = function(t) State.TargetSet.TargetWhitelist = t end
 })
-Sec9:CreateInput({
+T9:CreateInput({
     Name = "Target Blacklist",
     PlaceholderText = "Isim1, Isim2",
     RemoveTextAfterFocusLost = false,
-    Callback = function(t) State.Sections.TargetSettings.TargetBlacklist = t end
-})
-
--- BOLUM 10: GUI / MENU
-addToggleWithKeyControls(Sec10, "MOBILE MENU", "s10_mobile", State.Sections.GuiMenu, "MobileMenu", function(v)
-    ScreenGui.Enabled = v
-end)
-addToggleWithKeyControls(Sec10, "RAYFIELD SABLON", "s10_rayfield", State.Sections.GuiMenu, "RayfieldTemplate", function(v)
-    if v then Rayfield:Toggle() end
-end)
-addToggleWithKeyControls(Sec10, "TOP NOTCH (Tavanda Sag-Sol)", "s10_notch", State.Sections.GuiMenu, "TopNotch", function(v)
-    State.Sections.GuiMenu.TopNotch = v
-    State.Sections.GuiMenu.ButtonMode = not v
-    State.MenuMode = v and "TOP_NOTCH" or "BUTTON"
-    applyMenuMode()
-end)
-addToggleWithKeyControls(Sec10, "BUTTON (Her Yere Suruklenen)", "s10_button", State.Sections.GuiMenu, "ButtonMode", function(v)
-    State.Sections.GuiMenu.ButtonMode = v
-    State.Sections.GuiMenu.TopNotch = not v
-    State.MenuMode = v and "BUTTON" or "TOP_NOTCH"
-    applyMenuMode()
-end)
-Sec10:CreateSlider({
-    Name = "Top Notch Sag / Sol Konumu (%)",
-    Range = {12, 88},
-    Increment = 2,
-    CurrentValue = 50,
-    Callback = function(v)
-        State.Sections.GuiMenu.NotchPosition = v
-        State.TopNotchX = v / 100
-        applyMenuMode()
-    end
+    Callback = function(t) State.TargetSet.TargetBlacklist = t end
 })
 local function isEnemy(plr)
     if not plr or plr == LocalPlayer then return false end
-    if (State.Sections.AimbotTargeting.TeamCheck or State.Sections.ChecksFilters.TeamCheck) and LocalPlayer.Team and plr.Team then
+    if (State.Aimbot.TeamCheck or State.Checks.TeamCheck) and LocalPlayer.Team and plr.Team then
         return plr.Team ~= LocalPlayer.Team
     end
     return true
@@ -550,42 +422,57 @@ local function isFriend(plr)
     return ok and res or false
 end
 
-local function findTarget()
-    local bestPart = nil
-    local bestScore = math.huge
-    local maxDist = State.Sections.TargetSettings.TargetDistance or 250
-    local partName = State.Sections.TargetSettings.TargetPart or "Head"
+local function isInList(name, csv)
+    if not csv or csv == "" then return false end
+    local target = name:lower()
+    for item in string.gmatch(csv, "[^,]+") do
+        if item:gsub("^%s+", ""):gsub("%s+$", ""):lower() == target then
+            return true
+        end
+    end
+    return false
+end
+
+local function pickTarget()
+    local chosen = nil
+    local bestDist = math.huge
+    local maxDist = State.TargetSet.TargetDistance or 250
+    local partName = State.TargetSet.TargetPart or State.Aimbot.AimBone or "Head"
+    local filterMode = State.TargetSet.TargetFilter
 
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
+            if isInList(plr.Name, State.TargetSet.TargetIgnoreList) then continue end
+            if filterMode == "WhitelistOnly" and not isInList(plr.Name, State.TargetSet.TargetWhitelist) then continue end
+            if filterMode == "BlacklistSkip" and isInList(plr.Name, State.TargetSet.TargetBlacklist) then continue end
+
             local char = plr.Character
             local hum = char:FindFirstChildOfClass("Humanoid")
             local part = char:FindFirstChild(partName) or char:FindFirstChild("HumanoidRootPart")
 
-            local aliveOk = not State.Sections.ChecksFilters.AliveCheck or (hum and hum.Health > 0)
-            local enemyOk = not (State.Sections.AimbotTargeting.EnemyOnly or State.Sections.ChecksFilters.EnemyCheck) or isEnemy(plr)
-            local friendOk = not ((State.Sections.AimbotTargeting.FriendCheck or State.Sections.ChecksFilters.FriendCheck) and isFriend(plr))
+            local aliveOk = not State.Checks.AliveCheck or (hum and hum.Health > 0)
+            local enemyOk = not (State.ESP.EnemyOnly or State.Checks.EnemyCheck) or isEnemy(plr)
+            local friendOk = not ((State.Aimbot.FriendCheck or State.Checks.FriendCheck) and isFriend(plr))
 
-            if aliveOk and enemyOk and friendOk and part then
-                local dist = Camera and (part.Position - Camera.CFrame.Position).Magnitude or 9999
-                if dist <= maxDist and dist < bestScore then
-                    bestScore = dist
-                    bestPart = part
+            if aliveOk and enemyOk and friendOk and part and Camera then
+                local d = (part.Position - Camera.CFrame.Position).Magnitude
+                if d <= maxDist and d < bestDist then
+                    bestDist = d
+                    chosen = part
                 end
             end
         end
     end
-    return bestPart
+    return chosen
 end
 
-local espHighlights = {}
-local function updateHighlights()
-    local wantHighlight = State.Sections.EspVisuals.PlayerESP or State.Sections.EspVisuals.PlayerHighlight or State.Sections.EspVisuals.Chams or State.Sections.PlayerCharacter.PlayerHighlight or State.Sections.PlayerCharacter.PlayerChams
+local activeHighlights = {}
+local function refreshHighlights()
+    local want = State.ESP.PlayerESP or State.ESP.Chams or State.ESP.GlowESP or State.Character.CharacterESP or State.Character.PlayerHighlight or State.Character.PlayerChams
     for _, plr in ipairs(Players:GetPlayers()) do
         if plr ~= LocalPlayer and plr.Character then
-            local enemyOnly = State.Sections.EspVisuals.EnemyOnly
-            local show = wantHighlight and (not enemyOnly or isEnemy(plr))
-            local hl = espHighlights[plr]
+            local show = want and (not State.ESP.EnemyOnly or isEnemy(plr))
+            local hl = activeHighlights[plr]
             if show then
                 if not hl or not hl.Parent then
                     hl = Instance.new("Highlight")
@@ -593,48 +480,46 @@ local function updateHighlights()
                     hl.OutlineTransparency = 0
                     hl.FillColor = isEnemy(plr) and Color3.fromRGB(255, 70, 70) or Color3.fromRGB(70, 220, 120)
                     hl.Parent = plr.Character
-                    espHighlights[plr] = hl
+                    activeHighlights[plr] = hl
                 end
             elseif hl then
                 hl:Destroy()
-                espHighlights[plr] = nil
+                activeHighlights[plr] = nil
             end
         end
     end
 end
 
 UserInputService.JumpRequest:Connect(function()
-    if State.Sections.Movement.InfiniteJump and LocalPlayer.Character then
+    if State.Movement.InfiniteJump and LocalPlayer.Character then
         local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
         if hum then hum:ChangeState(Enum.HumanoidStateType.Jumping) end
     end
 end)
 
 RunService.RenderStepped:Connect(function()
-    updateHighlights()
+    refreshHighlights()
 
     if LocalPlayer.Character then
         local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
         local hrp = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
         if hum then
-            if State.Sections.Movement.SpeedHack then hum.WalkSpeed = 32 end
-            if State.Sections.Movement.SuperJump then hum.JumpPower = 85 end
+            if State.Movement.SpeedHack then hum.WalkSpeed = 32 end
+            if State.Movement.SuperJump then hum.JumpPower = 85 end
         end
 
-        if hrp and State.Sections.Movement.Spinbot then
+        if hrp and State.Movement.Spinbot then
             hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(18), 0)
         end
     end
 
-    if State.Sections.AimbotTargeting.Aimbot or State.Sections.AimbotTargeting.LegitAim or State.Sections.AimbotTargeting.TargetLock then
-        local target = findTarget()
+    if State.Aimbot.Aimbot or State.Aimbot.LegitAim or State.Aimbot.TargetLock then
+        local target = pickTarget()
         if target and Camera then
-            local smooth = State.Sections.AimbotTargeting.LegitAim and 0.12 or (State.Sections.AimbotTargeting.SmoothAim and 0.18 or 0.35)
-            local desired = CFrame.lookAt(Camera.CFrame.Position, target.Position)
-            Camera.CFrame = Camera.CFrame:Lerp(desired, smooth)
+            local alpha = State.Aimbot.LegitAim and 0.12 or (State.Aimbot.SmoothAim and 0.18 or 0.35)
+            local goal = CFrame.lookAt(Camera.CFrame.Position, target.Position)
+            Camera.CFrame = Camera.CFrame:Lerp(goal, alpha)
         end
     end
 end)
-
-applyMenuMode()
